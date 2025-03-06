@@ -157,6 +157,11 @@
   .elegant-scroll::-webkit-scrollbar-thumb {
     @apply bg-muted-foreground/20 rounded-full transition-colors duration-300 hover:bg-muted-foreground/30;
   }
+  
+  /* Enhancing horizontal scrolling experience */
+  .horizontal-scroll-indicator {
+    @apply text-center text-xs text-muted-foreground italic my-1 animate-pulse;
+  }
 }
 
 @layer utilities {

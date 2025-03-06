@@ -151,16 +151,22 @@ const PromptCard: React.FC<PromptCardProps> = ({
             <Copy className="w-4 h-4" />
           )}
         </button>
-        <pre className={cn(
-          "text-xs sm:text-sm overflow-auto elegant-scroll relative",
+        <div className={cn(
+          "relative",
           codeExpanded ? "max-h-96" : "max-h-32"
         )}>
-          <code>{code}</code>
-        </pre>
+          <pre className="text-xs sm:text-sm overflow-x-auto elegant-scroll pb-2">
+            <code className="block whitespace-pre">{code}</code>
+          </pre>
+          
+          {!codeExpanded && code.length > 150 && (
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-secondary/80 to-transparent pointer-events-none" />
+          )}
+        </div>
         
-        {code.length > 150 && !codeExpanded && (
-          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-secondary/80 to-transparent pointer-events-none" />
-        )}
+        <div className="text-xs text-muted-foreground mt-2 text-center italic">
+          <span>Scroll horizontally to see more →</span>
+        </div>
       </div>
       
       {code.length > 150 && (
