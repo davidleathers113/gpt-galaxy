@@ -58,7 +58,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
   reactions: initialReactions,
 }) => {
   const [copied, setCopied] = useState(false);
-  const [reactions, setReactions] = useState(initialReactions);
+  const [userReactions, setUserReactions] = useState(initialReactions);
   
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
@@ -71,7 +71,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
   };
   
   const handleReaction = (reactionId: string) => {
-    setReactions(prev => ({
+    setUserReactions(prev => ({
       ...prev,
       [reactionId]: (prev[reactionId] || 0) + 1
     }));
@@ -133,7 +133,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
             )}
           >
             {reaction.icon}
-            <span>{reactions[reaction.id] || 0}</span>
+            <span>{userReactions[reaction.id] || 0}</span>
           </button>
         ))}
       </div>
