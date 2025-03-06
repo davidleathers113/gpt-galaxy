@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Copy, Check, Heart, Smile, ThumbsUp, ThumbsDown, Star, ChevronDown, ChevronUp } from 'lucide-react';
+import { Copy, Check, Heart, Smile, ThumbsUp, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from "sonner";
 import { cn } from '@/lib/utils';
 
@@ -59,7 +59,8 @@ const PromptCard: React.FC<PromptCardProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const [userReactions, setUserReactions] = useState(initialReactions);
-  const [expanded, setExpanded] = useState(false);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [codeExpanded, setCodeExpanded] = useState(false);
   
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
@@ -84,8 +85,12 @@ const PromptCard: React.FC<PromptCardProps> = ({
     toast(`You reacted with ${reactionLabel}!`);
   };
 
-  const toggleExpand = () => {
-    setExpanded(!expanded);
+  const toggleDescriptionExpand = () => {
+    setDescriptionExpanded(!descriptionExpanded);
+  };
+
+  const toggleCodeExpand = () => {
+    setCodeExpanded(!codeExpanded);
   };
 
   return (
@@ -106,20 +111,22 @@ const PromptCard: React.FC<PromptCardProps> = ({
         {title}
       </h3>
       
-      <div className="relative">
+      <div className="relative mb-4">
         <p className={cn(
-          "text-sm text-muted-foreground mb-4",
-          expanded ? "" : "line-clamp-2"
+          "text-sm text-muted-foreground",
+          descriptionExpanded ? "" : "line-clamp-2"
         )}>
           {description}
         </p>
         
         {description.length > 100 && (
           <button 
-            onClick={toggleExpand} 
-            className="text-xs flex items-center text-primary hover:underline mt-1 mb-3"
+            onClick={toggleDescriptionExpand} 
+            className="text-xs flex items-center text-primary hover:underline mt-1"
+            aria-expanded={descriptionExpanded}
+            aria-label={descriptionExpanded ? "Show less description" : "Read more description"}
           >
-            {expanded ? (
+            {descriptionExpanded ? (
               <>
                 <ChevronUp className="w-3 h-3 mr-1" /> Show less
               </>
@@ -132,13 +139,11 @@ const PromptCard: React.FC<PromptCardProps> = ({
         )}
       </div>
       
-      <div className={cn(
-        "prompt-code mb-4 group-hover:shadow-sm transition-all",
-        expanded ? "max-h-none" : "max-h-32"
-      )}>
+      <div className="prompt-code mb-4 group-hover:shadow-sm transition-all relative">
         <button 
           onClick={handleCopy}
           className="absolute top-2 right-2 p-1.5 rounded-md bg-background/50 hover:bg-background backdrop-blur-sm transition-all"
+          aria-label="Copy code to clipboard"
         >
           {copied ? (
             <Check className="w-4 h-4 text-green-500" />
@@ -147,25 +152,37 @@ const PromptCard: React.FC<PromptCardProps> = ({
           )}
         </button>
         <pre className={cn(
-          "text-xs sm:text-sm overflow-auto elegant-scroll", 
-          expanded ? "max-h-96" : "max-h-32"
+          "text-xs sm:text-sm overflow-auto elegant-scroll relative",
+          codeExpanded ? "max-h-96" : "max-h-32"
         )}>
           <code>{code}</code>
         </pre>
         
-        {code.length > 150 && !expanded && (
-          <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-secondary/80 to-transparent pointer-events-none" />
-        )}
-        
-        {code.length > 150 && (
-          <button 
-            onClick={toggleExpand} 
-            className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs bg-background/70 backdrop-blur-sm px-3 py-1 rounded-full border border-border hover:bg-background/90 transition-all"
-          >
-            {expanded ? "Show less" : "Show more"}
-          </button>
+        {code.length > 150 && !codeExpanded && (
+          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-secondary/80 to-transparent pointer-events-none" />
         )}
       </div>
+      
+      {code.length > 150 && (
+        <div className="text-center mb-4">
+          <button 
+            onClick={toggleCodeExpand} 
+            className="text-xs inline-flex items-center text-primary hover:underline"
+            aria-expanded={codeExpanded}
+            aria-label={codeExpanded ? "Show less code" : "Show more code"}
+          >
+            {codeExpanded ? (
+              <>
+                <ChevronUp className="w-3 h-3 mr-1" /> Show less code
+              </>
+            ) : (
+              <>
+                <ChevronDown className="w-3 h-3 mr-1" /> Show more code
+              </>
+            )}
+          </button>
+        </div>
+      )}
       
       <div className="flex flex-wrap gap-2">
         {reactions.map((reaction) => (
@@ -177,6 +194,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
               reaction.color,
               "hover:scale-105 active:scale-95"
             )}
+            aria-label={`React with ${reaction.label}`}
           >
             {reaction.icon}
             <span>{userReactions[reaction.id] || 0}</span>
