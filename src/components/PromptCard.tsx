@@ -76,7 +76,11 @@ const PromptCard: React.FC<PromptCardProps> = ({
       [reactionId]: (prev[reactionId] || 0) + 1
     }));
     
-    toast(`You reacted with ${reactions.find(r => r.id === reactionId)?.label || reactionId}!`);
+    // Find the reaction object to get its label
+    const reactionObj = reactions.find(r => r.id === reactionId);
+    const reactionLabel = reactionObj ? reactionObj.label : reactionId;
+    
+    toast(`You reacted with ${reactionLabel}!`);
   };
 
   return (
