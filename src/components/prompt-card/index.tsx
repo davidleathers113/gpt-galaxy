@@ -44,10 +44,10 @@ const PromptCard: React.FC<PromptCardProps> = ({
   };
 
   return (
-    <div className="prompt-card group animate-fade-in">
-      <div className="flex justify-between items-start mb-3">
+    <div className="prompt-card rounded-xl border border-border bg-card p-5 hover:shadow-md transition-all duration-300">
+      <div className="flex justify-between items-start mb-4">
         <div>
-          <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+          <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
             {category}
           </span>
         </div>
@@ -57,7 +57,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
         </div>
       </div>
       
-      <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+      <h3 className="text-lg font-semibold mb-3 group-hover:text-primary transition-colors">
         {title}
       </h3>
       

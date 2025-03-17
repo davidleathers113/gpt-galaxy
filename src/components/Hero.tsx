@@ -7,8 +7,8 @@ const Hero = () => {
     <section className="relative pt-32 pb-16 px-6 md:px-10 overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-[100vh] bg-gradient-to-b from-primary/5 to-transparent -z-10"></div>
       
-      <div className="container mx-auto max-w-7xl">
-        <div className="max-w-3xl mx-auto text-center mb-16">
+      <div className="container mx-auto max-w-3xl">
+        <div className="text-center mb-16">
           <div className="inline-flex items-center px-3 py-1 mb-6 rounded-full bg-primary/10 text-primary text-sm font-medium animate-pulse-light">
             <Star className="w-3.5 h-3.5 mr-1" />
             Discover the best AI prompts for developers
@@ -22,29 +22,29 @@ const Hero = () => {
             A curated collection of powerful AI prompts designed to boost your productivity, spark creativity, and solve complex problems.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <div className="search-input rounded-full px-5 py-3 flex items-center space-x-3 w-full sm:w-96">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+            <div className="search-input rounded-full px-5 py-3 flex items-center space-x-3 w-full sm:w-auto sm:min-w-80 border border-border">
               <Search className="w-5 h-5 text-muted-foreground" />
               <input 
                 type="text" 
-                placeholder="Search for prompts, categories, or topics..." 
+                placeholder="Search for prompts..." 
                 className="bg-transparent text-base w-full outline-none placeholder:text-muted-foreground/60"
               />
             </div>
             
-            <button className="rounded-full px-6 py-3 bg-primary text-primary-foreground font-medium flex items-center space-x-2 transition-all hover:brightness-110">
+            <button className="rounded-full px-6 py-3 bg-primary text-primary-foreground font-medium flex items-center space-x-2 transition-all hover:brightness-110 w-full sm:w-auto">
               <span>Explore All</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
           
-          <div className="flex flex-wrap justify-center gap-2 text-sm text-muted-foreground">
-            <span className="font-medium">Popular:</span>
+          <div className="flex flex-wrap justify-center gap-3 text-sm">
+            <span className="font-medium text-foreground">Popular:</span>
             {['Development', 'Data Analysis', 'Content Creation', 'Debugging', 'Creative Writing'].map((tag) => (
               <a 
                 key={tag} 
                 href="#" 
-                className="transition-colors hover:text-foreground"
+                className="text-muted-foreground hover:text-primary transition-colors"
               >
                 {tag}
               </a>

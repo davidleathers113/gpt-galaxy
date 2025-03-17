@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { SlidersHorizontal, Star, ArrowDownUp } from 'lucide-react';
 import PromptCard from './PromptCard';
 import { mockPrompts } from '@/data/mockData';
+import { Button } from './ui/button';
 
 type SortOption = 'popular' | 'recent' | 'trending';
 type CategoryFilter = 'all' | string;
@@ -36,7 +37,7 @@ const PromptGrid = () => {
   ];
 
   return (
-    <section className="px-6 md:px-10 py-12">
+    <section className="px-6 md:px-10 py-16">
       <div className="container mx-auto max-w-7xl">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
           <h2 className="text-2xl font-bold">
@@ -44,7 +45,7 @@ const PromptGrid = () => {
           </h2>
           
           <div className="flex flex-wrap gap-3">
-            <div className="inline-flex items-center rounded-full bg-secondary px-3 py-1.5 gap-2">
+            <div className="inline-flex items-center rounded-full bg-secondary/80 px-3 py-1.5 gap-2 border border-border">
               <SlidersHorizontal className="w-4 h-4" />
               <select 
                 value={categoryFilter}
@@ -58,7 +59,7 @@ const PromptGrid = () => {
               </select>
             </div>
             
-            <div className="inline-flex items-center rounded-full bg-secondary px-3 py-1.5 gap-2">
+            <div className="inline-flex items-center rounded-full bg-secondary/80 px-3 py-1.5 gap-2 border border-border">
               <ArrowDownUp className="w-4 h-4" />
               <select 
                 value={sortBy}
@@ -87,10 +88,13 @@ const PromptGrid = () => {
         </div>
         
         <div className="flex justify-center mt-16">
-          <button className="group relative overflow-hidden rounded-full bg-secondary px-6 py-3 font-medium transition-all hover:shadow-md hover:bg-secondary/80">
-            <span className="relative z-10">Load More Prompts</span>
-            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary/20 to-primary/0 opacity-0 transition-opacity group-hover:opacity-100"></div>
-          </button>
+          <Button variant="outline" className="gap-2 rounded-full">
+            Load More Prompts
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            </span>
+          </Button>
         </div>
       </div>
     </section>
