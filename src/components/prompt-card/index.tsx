@@ -33,7 +33,14 @@ const PromptCard: React.FC<PromptCardProps> = ({
       [reactionId]: (prev[reactionId] || 0) + 1
     }));
     
-    toast(`You reacted!`);
+    const reactionLabels = {
+      like: 'Helpful',
+      love: 'Love',
+      smile: 'Brilliant',
+      save: 'Saved'
+    };
+    
+    toast(`You reacted: ${reactionLabels[reactionId as keyof typeof reactionLabels] || 'Reaction'}`);
   };
 
   return (
