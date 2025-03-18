@@ -38,8 +38,9 @@ const Header = () => {
           </div>
           
           <div className="hidden md:flex items-center space-x-6">
-            <nav className="flex items-center space-x-1" aria-label="Main navigation">
+            <nav className="flex items-center space-x-4" aria-label="Main navigation">
               <Link to="/submit" className="nav-link">Submit</Link>
+              <Link to="/waitlist" className="nav-link">Join Waitlist</Link>
             </nav>
             
             <div className="search-input rounded-full px-4 py-2 flex items-center space-x-2 w-64">
