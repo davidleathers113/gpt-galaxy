@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Star, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import PromptCard from './PromptCard';
 import { mockPrompts } from '@/data/mockData';
 
@@ -15,10 +15,6 @@ const FeaturedPrompts = () => {
       <div className="container mx-auto max-w-7xl">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10">
           <div>
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-3">
-              <Star className="w-3.5 h-3.5 mr-1.5" />
-              Trusted by 5,000+ Developers
-            </div>
             <h2 className="text-2xl font-bold">
               Top-Performing <span className="gradient-text">Time-Savers</span>
             </h2>
