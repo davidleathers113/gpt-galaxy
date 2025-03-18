@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
-import { Copy, Check, ChevronDown, ChevronUp } from 'lucide-react';
-import { toast } from "sonner";
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PromptCardCodeDisplayProps {
@@ -9,18 +8,7 @@ interface PromptCardCodeDisplayProps {
 }
 
 const PromptCardCodeDisplay: React.FC<PromptCardCodeDisplayProps> = ({ code }) => {
-  const [copied, setCopied] = useState(false);
   const [codeExpanded, setCodeExpanded] = useState(false);
-  
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    toast.success("Copied to clipboard!");
-    
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-  };
 
   const toggleCodeExpand = () => {
     setCodeExpanded(!codeExpanded);
@@ -28,19 +16,7 @@ const PromptCardCodeDisplay: React.FC<PromptCardCodeDisplayProps> = ({ code }) =
 
   return (
     <div className="prompt-code-container mb-4">
-      <div className="prompt-code relative rounded-lg bg-secondary/70 border border-border/40 overflow-hidden group/code">
-        <button 
-          onClick={handleCopy}
-          className="absolute top-2 right-2 p-1.5 rounded-md bg-background/70 hover:bg-background backdrop-blur-sm transition-all z-10"
-          aria-label="Copy code to clipboard"
-        >
-          {copied ? (
-            <Check className="w-4 h-4 text-green-500" />
-          ) : (
-            <Copy className="w-4 h-4 opacity-70 group-hover/code:opacity-100" />
-          )}
-        </button>
-        
+      <div className="prompt-code relative rounded-lg bg-secondary/70 border border-border/40 overflow-hidden">
         <div className={cn(
           "relative transition-all duration-300 p-4",
           codeExpanded ? "max-h-96" : "max-h-32"

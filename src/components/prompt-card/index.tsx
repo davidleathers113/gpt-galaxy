@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Copy, Zap, CheckCircle2, Clock } from 'lucide-react';
+import { Copy, CheckCircle2 } from 'lucide-react';
 import PromptCardDescription from './PromptCardDescription';
 import PromptCardCodeDisplay from './PromptCardCodeDisplay';
 import PromptCardReactions from './PromptCardReactions';
@@ -27,6 +27,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
   reactions: initialReactions,
 }) => {
   const [userReactions, setUserReactions] = useState(initialReactions);
+  const [copied, setCopied] = useState(false);
   
   const handleReaction = (reactionId: string) => {
     setUserReactions(prev => ({
@@ -42,6 +43,16 @@ const PromptCard: React.FC<PromptCardProps> = ({
     };
     
     toast(`You reacted: ${reactionLabels[reactionId as keyof typeof reactionLabels] || 'Reaction'}`);
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    toast.success("Prompt copied to clipboard!");
+    
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
   };
 
   // Calculate total reactions as a proxy for effectiveness
@@ -78,12 +89,34 @@ const PromptCard: React.FC<PromptCardProps> = ({
         <PromptCardCodeDisplay code={code} />
       </div>
       
-      {/* Bottom section with reactions only */}
-      <div className="px-5 pt-2 pb-5">
+      {/* Bottom section with reactions and copy button */}
+      <div className="px-5 pt-2 pb-5 flex justify-between items-center">
         <PromptCardReactions 
           reactions={userReactions} 
           onReaction={handleReaction} 
         />
+        
+        <button 
+          onClick={handleCopy}
+          className={cn(
+            "flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium transition-all",
+            copied 
+              ? "bg-green-100 text-green-700 border border-green-200" 
+              : "bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border/50"
+          )}
+        >
+          {copied ? (
+            <>
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5" />
+              Copy
+            </>
+          )}
+        </button>
       </div>
       
       {/* Subtle hover effect for the entire card */}
