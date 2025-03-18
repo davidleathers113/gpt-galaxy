@@ -246,6 +246,71 @@ export type Database = {
         }
         Relationships: []
       }
+      prompt_reactions: {
+        Row: {
+          count: number
+          id: string
+          prompt_id: string
+          reaction_type: string
+          updated_at: string
+        }
+        Insert: {
+          count?: number
+          id?: string
+          prompt_id: string
+          reaction_type: string
+          updated_at?: string
+        }
+        Update: {
+          count?: number
+          id?: string
+          prompt_id?: string
+          reaction_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompt_reactions_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: false
+            referencedRelation: "prompts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prompts: {
+        Row: {
+          category: string
+          code: string
+          copy_count: number
+          created_at: string
+          description: string
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          code: string
+          copy_count?: number
+          created_at?: string
+          description: string
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          code?: string
+          copy_count?: number
+          created_at?: string
+          description?: string
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

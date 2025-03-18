@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface PromptCardProps {
   id: string;
@@ -29,21 +30,78 @@ const PromptCard: React.FC<PromptCardProps> = ({
   reactions: initialReactions,
 }) => {
   const [userReactions, setUserReactions] = useState(initialReactions);
+  const [copied, setCopied] = useState(false);
   
-  const handleReaction = (reactionId: string) => {
+  const handleReaction = async (reactionId: string) => {
+    // Update local state first for better UX
     setUserReactions(prev => ({
       ...prev,
       [reactionId]: (prev[reactionId] || 0) + 1
     }));
     
-    const reactionLabels = {
-      like: 'Helpful',
-      love: 'Love',
-      smile: 'Brilliant',
-      save: 'Saved to your collection'
-    };
-    
-    toast(`You reacted: ${reactionLabels[reactionId as keyof typeof reactionLabels] || 'Reaction'}`);
+    // Update the reaction in Supabase
+    try {
+      // Check if this reaction already exists for this prompt
+      const { data: existingReaction } = await supabase
+        .from('prompt_reactions')
+        .select('*')
+        .eq('prompt_id', id)
+        .eq('reaction_type', reactionId)
+        .single();
+      
+      if (existingReaction) {
+        // Update existing reaction count
+        await supabase
+          .from('prompt_reactions')
+          .update({ count: existingReaction.count + 1 })
+          .eq('id', existingReaction.id);
+      } else {
+        // Create new reaction
+        await supabase
+          .from('prompt_reactions')
+          .insert({
+            prompt_id: id,
+            reaction_type: reactionId,
+            count: 1
+          });
+      }
+      
+      const reactionLabels = {
+        like: 'Helpful',
+        love: 'Love',
+        smile: 'Brilliant',
+        save: 'Saved to your collection'
+      };
+      
+      toast(`You reacted: ${reactionLabels[reactionId as keyof typeof reactionLabels] || 'Reaction'}`);
+    } catch (error) {
+      console.error('Error updating reaction:', error);
+      // Revert local state if there was an error
+      setUserReactions(initialReactions);
+      toast.error('Failed to save reaction');
+    }
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      
+      // Update copy count in Supabase
+      await supabase
+        .from('prompts')
+        .update({ copy_count: copyCount + 1 })
+        .eq('id', id);
+      
+      toast.success('Prompt copied to clipboard!');
+      
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      toast.error('Failed to copy to clipboard');
+    }
   };
 
   return (
@@ -63,13 +121,21 @@ const PromptCard: React.FC<PromptCardProps> = ({
             </Badge>
           </div>
           
-          <div 
-            className="flex items-center gap-1.5 text-xs text-muted-foreground/80 bg-secondary/50 px-2 py-0.5 rounded-full" 
-            title={`Copied ${copyCount} times`}
+          <button
+            onClick={handleCopy}
+            className={cn(
+              "flex items-center gap-1.5 text-xs text-muted-foreground/80 bg-secondary/50 px-2 py-0.5 rounded-full hover:bg-secondary transition-colors", 
+              copied && "text-green-600 bg-green-100"
+            )}
+            title={copied ? "Copied!" : `Copy prompt (used ${copyCount} times)`}
           >
-            <Copy className="w-3 h-3 mr-0.5" aria-hidden="true" /> 
+            {copied ? (
+              <CheckCircle2 className="w-3 h-3 mr-0.5" aria-hidden="true" />
+            ) : (
+              <Copy className="w-3 h-3 mr-0.5" aria-hidden="true" />
+            )}
             <span className="tabular-nums font-medium">{copyCount}</span>
-          </div>
+          </button>
         </header>
         
         <h2 className="text-base font-semibold mb-2 text-foreground group-hover:text-primary/90 transition-colors line-clamp-1">
