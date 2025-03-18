@@ -16,35 +16,35 @@ export interface Reaction {
 export const reactions: Reaction[] = [
   { 
     id: 'like', 
-    icon: <ThumbsUp className="w-4 h-4" />, 
+    icon: <ThumbsUp className="w-3.5 h-3.5" />, 
     label: 'Helpful', 
-    color: 'bg-blue-100 text-blue-600', 
-    hoverColor: 'hover:bg-blue-200',
-    activeColor: 'active:bg-blue-300'
+    color: 'bg-blue-50 text-blue-600 border-blue-100', 
+    hoverColor: 'hover:bg-blue-100 hover:border-blue-200',
+    activeColor: 'active:bg-blue-200'
   },
   { 
     id: 'love', 
-    icon: <Heart className="w-4 h-4" />, 
+    icon: <Heart className="w-3.5 h-3.5" />, 
     label: 'Love', 
-    color: 'bg-red-100 text-red-600',
-    hoverColor: 'hover:bg-red-200',
-    activeColor: 'active:bg-red-300'
+    color: 'bg-red-50 text-red-600 border-red-100',
+    hoverColor: 'hover:bg-red-100 hover:border-red-200',
+    activeColor: 'active:bg-red-200'
   },
   { 
     id: 'smile', 
-    icon: <Smile className="w-4 h-4" />, 
+    icon: <Smile className="w-3.5 h-3.5" />, 
     label: 'Brilliant', 
-    color: 'bg-yellow-100 text-yellow-600',
-    hoverColor: 'hover:bg-yellow-200',
-    activeColor: 'active:bg-yellow-300'
+    color: 'bg-amber-50 text-amber-600 border-amber-100',
+    hoverColor: 'hover:bg-amber-100 hover:border-amber-200',
+    activeColor: 'active:bg-amber-200'
   },
   { 
     id: 'save', 
-    icon: <Star className="w-4 h-4" />, 
+    icon: <Star className="w-3.5 h-3.5" />, 
     label: 'Save', 
-    color: 'bg-purple-100 text-purple-600',
-    hoverColor: 'hover:bg-purple-200',
-    activeColor: 'active:bg-purple-300'
+    color: 'bg-purple-50 text-purple-600 border-purple-100',
+    hoverColor: 'hover:bg-purple-100 hover:border-purple-200',
+    activeColor: 'active:bg-purple-200'
   },
 ];
 
@@ -58,6 +58,7 @@ const PromptCardReactions: React.FC<PromptCardReactionsProps> = ({
   onReaction 
 }) => {
   const [recentlyClicked, setRecentlyClicked] = useState<string | null>(null);
+  const [hoveredReaction, setHoveredReaction] = useState<string | null>(null);
 
   const handleReactionClick = (reactionId: string) => {
     onReaction(reactionId);
@@ -70,25 +71,36 @@ const PromptCardReactions: React.FC<PromptCardReactionsProps> = ({
   };
 
   return (
-    <div className="flex flex-wrap gap-2 md:gap-3">
+    <div className="flex flex-wrap gap-2">
       {reactions.map((reaction) => (
-        <button
-          key={reaction.id}
-          onClick={() => handleReactionClick(reaction.id)}
-          className={cn(
-            "text-xs md:text-sm rounded-full px-3 py-1.5 md:px-3.5 md:py-2 flex items-center gap-1.5 transition-all",
-            reaction.color,
-            reaction.hoverColor,
-            reaction.activeColor,
-            "hover:scale-105 active:scale-95",
-            "touch-manipulation", // Better touch handling
-            recentlyClicked === reaction.id && "animate-reaction-pulse"
+        <div className="relative" key={reaction.id}>
+          <button
+            onClick={() => handleReactionClick(reaction.id)}
+            onMouseEnter={() => setHoveredReaction(reaction.id)}
+            onMouseLeave={() => setHoveredReaction(null)}
+            className={cn(
+              "text-xs rounded-full px-3 py-1.5 flex items-center gap-1.5 transition-all border",
+              reaction.color,
+              reaction.hoverColor,
+              reaction.activeColor,
+              "hover:scale-105 active:scale-95",
+              "touch-manipulation", // Better touch handling
+              recentlyClicked === reaction.id && "animate-reaction-pulse"
+            )}
+            aria-label={`React with ${reaction.label}`}
+          >
+            {reaction.icon}
+            <span className="font-medium tabular-nums">{userReactions[reaction.id] || 0}</span>
+          </button>
+          
+          {/* Tooltip on hover */}
+          {hoveredReaction === reaction.id && (
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1.5 px-2 py-1 bg-foreground text-background text-[10px] rounded whitespace-nowrap animate-fade-in z-10">
+              {reaction.label}
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-2 h-2 bg-foreground rotate-45"></div>
+            </div>
           )}
-          aria-label={`React with ${reaction.label}`}
-        >
-          {reaction.icon}
-          <span className="font-medium">{userReactions[reaction.id] || 0}</span>
-        </button>
+        </div>
       ))}
     </div>
   );

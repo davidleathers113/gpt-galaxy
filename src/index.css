@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -84,9 +83,7 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
     box-sizing: border-box;
@@ -117,7 +114,7 @@
   }
   
   .prompt-card {
-    @apply glass-card rounded-xl p-6 transition-all duration-300 hover:shadow-lg;
+    @apply bg-card rounded-xl transition-all duration-300;
   }
   
   .reaction-button {
@@ -125,7 +122,7 @@
   }
   
   .prompt-code {
-    @apply bg-secondary/50 rounded-lg p-4 font-mono text-sm relative overflow-hidden;
+    @apply font-mono text-sm relative overflow-hidden;
   }
   
   .search-input {
@@ -162,6 +159,19 @@
   .horizontal-scroll-indicator {
     @apply text-center text-xs text-muted-foreground italic my-1 animate-pulse;
   }
+  
+  /* Added utilities for card interactions */
+  .card-hover-effect {
+    @apply transition-all duration-300 hover:shadow-md hover:translate-y-[-2px];
+  }
+  
+  .prompt-code-container pre {
+    @apply font-mono text-xs sm:text-sm overflow-x-auto;
+  }
+  
+  .prompt-code-container code {
+    @apply block whitespace-pre;
+  }
 }
 
 @layer utilities {
@@ -171,5 +181,9 @@
   
   .gradient-text {
     @apply bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent;
+  }
+  
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }

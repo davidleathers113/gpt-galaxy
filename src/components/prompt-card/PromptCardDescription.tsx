@@ -15,7 +15,7 @@ const PromptCardDescription: React.FC<PromptCardDescriptionProps> = ({ descripti
   };
 
   return (
-    <div className="relative mb-4">
+    <div className="relative mb-3">
       <p className={cn(
         "text-sm text-muted-foreground",
         descriptionExpanded ? "" : "line-clamp-2"
@@ -26,17 +26,19 @@ const PromptCardDescription: React.FC<PromptCardDescriptionProps> = ({ descripti
       {description.length > 100 && (
         <button 
           onClick={toggleDescriptionExpand} 
-          className="text-xs flex items-center text-primary hover:underline mt-1"
+          className="text-xs flex items-center text-primary hover:underline mt-1 group"
           aria-expanded={descriptionExpanded}
           aria-label={descriptionExpanded ? "Show less description" : "Read more description"}
         >
           {descriptionExpanded ? (
             <>
-              <ChevronUp className="w-3 h-3 mr-1" /> Show less
+              <ChevronUp className="w-3 h-3 mr-1 group-hover:translate-y-[-1px] transition-transform" /> 
+              <span>Show less</span>
             </>
           ) : (
             <>
-              <ChevronDown className="w-3 h-3 mr-1" /> Read more
+              <ChevronDown className="w-3 h-3 mr-1 group-hover:translate-y-[1px] transition-transform" /> 
+              <span>Read more</span>
             </>
           )}
         </button>
