@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Copy, Zap, CheckCircle2, Clock } from 'lucide-react';
+import { Copy, CheckCircle2 } from 'lucide-react';
 import PromptCardDescription from './PromptCardDescription';
 import PromptCardCodeDisplay from './PromptCardCodeDisplay';
 import PromptCardReactions from './PromptCardReactions';
@@ -46,9 +46,6 @@ const PromptCard: React.FC<PromptCardProps> = ({
     toast(`You reacted: ${reactionLabels[reactionId as keyof typeof reactionLabels] || 'Reaction'}`);
   };
 
-  // Calculate total reactions as a proxy for effectiveness
-  const totalReactions = Object.values(userReactions).reduce((sum, count) => sum + count, 0);
-
   return (
     <article 
       className="prompt-card group relative rounded-xl border border-border/50 bg-card hover:shadow-md transition-all duration-300 hover:border-primary/20 focus-within:border-primary/30 focus-within:ring-1 focus-within:ring-primary/20"
@@ -70,7 +67,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
             className="flex items-center gap-1.5 text-xs text-muted-foreground/80 bg-secondary/50 px-2 py-0.5 rounded-full" 
             title={`Copied ${copyCount} times`}
           >
-            <Copy className="w-3 h-3 mr-0.5" /> 
+            <Copy className="w-3 h-3 mr-0.5" aria-hidden="true" /> 
             <span className="tabular-nums font-medium">{copyCount}</span>
           </div>
         </header>
@@ -79,6 +76,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
           {title}
         </h2>
         
+        {/* Description is now collapsible */}
         <PromptCardDescription description={description} />
       </div>
       
