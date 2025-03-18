@@ -122,16 +122,36 @@ export function usePrompts(categoryFilter: string, sortBy: string, page: number)
     staleTime: 60000, // Consider data fresh for 1 minute
   });
   
-  // Prepare the promptColumns data
+  // Prepare the promptColumns data with balanced distribution
   const promptColumns = (() => {
-    if (!promptsData) return [[], [], []];
+    if (!promptsData) return [[], []];
     
-    // Divide prompts into three columns
-    return [
-      promptsData.filter((_, i) => i % 3 === 0),
-      promptsData.filter((_, i) => i % 3 === 1),
-      promptsData.filter((_, i) => i % 3 === 2),
-    ];
+    // Create two balanced columns
+    const columns: PromptWithReactions[][] = [[], []];
+    
+    // Calculate total height for balancing
+    promptsData.forEach((prompt, index) => {
+      // Use a simple height estimation based on content length
+      // This is a heuristic - in a real app you might want to measure actual DOM heights
+      const estimatedHeight = 
+        (prompt.title?.length || 0) + 
+        (prompt.description?.length || 0) * 0.5 + 
+        (prompt.code?.length || 0) * 0.1;
+      
+      // Add to the column with the smallest current total height
+      const column0Height = columns[0].reduce((sum, p) => 
+        sum + (p.title?.length || 0) + (p.description?.length || 0) * 0.5 + (p.code?.length || 0) * 0.1, 0);
+      const column1Height = columns[1].reduce((sum, p) => 
+        sum + (p.title?.length || 0) + (p.description?.length || 0) * 0.5 + (p.code?.length || 0) * 0.1, 0);
+      
+      if (column0Height <= column1Height) {
+        columns[0].push(prompt);
+      } else {
+        columns[1].push(prompt);
+      }
+    });
+    
+    return columns;
   })();
   
   return {

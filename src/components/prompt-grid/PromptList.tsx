@@ -20,7 +20,7 @@ export default function PromptList({ promptColumns }: PromptListProps) {
   }
   
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {promptColumns.map((column, columnIndex) => (
         <div key={columnIndex} className="flex flex-col gap-6">
           {column.map(prompt => (
