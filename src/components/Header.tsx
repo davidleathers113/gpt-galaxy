@@ -1,15 +1,11 @@
 
 import React, { useEffect, useState } from 'react';
-import { Search, Moon, Sun } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { useTheme } from '@/hooks/use-theme';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
-  const { isDarkMode, setIsDarkMode } = useTheme();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -55,19 +51,6 @@ const Header = () => {
                 className="bg-transparent text-sm w-full outline-none placeholder:text-muted-foreground/60"
                 aria-label="Search prompts"
               />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Sun className="h-4 w-4" />
-              <Switch
-                id="header-dark-mode"
-                checked={isDarkMode}
-                onCheckedChange={setIsDarkMode}
-              />
-              <Moon className="h-4 w-4" />
-              <Label htmlFor="header-dark-mode" className="sr-only">
-                Toggle dark mode
-              </Label>
             </div>
           </div>
           
