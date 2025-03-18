@@ -17,7 +17,8 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
-      <main className="flex-1">
+      {/* Added pt-20 class to ensure content doesn't appear behind header */}
+      <main className="flex-1 pt-20">
         <Hero />
         
         <FeaturedPrompts />
