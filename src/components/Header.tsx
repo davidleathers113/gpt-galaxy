@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -28,18 +29,17 @@ const Header = () => {
       <div className="container mx-auto max-w-7xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-              <span className="text-white font-bold text-xl">P</span>
-            </div>
+            <Link to="/">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+                <span className="text-white font-bold text-xl">P</span>
+              </div>
+            </Link>
             <h1 className="text-xl font-semibold gradient-text tracking-tight">PromptVault</h1>
           </div>
           
           <div className="hidden md:flex items-center space-x-6">
             <nav className="flex items-center space-x-1" aria-label="Main navigation">
-              <a href="#" className="nav-link">Discover</a>
-              <a href="#" className="nav-link">Categories</a>
-              <a href="#" className="nav-link">Trending</a>
-              <a href="#" className="nav-link">Submit</a>
+              <Link to="/submit" className="nav-link">Submit</Link>
             </nav>
             
             <div className="search-input rounded-full px-4 py-2 flex items-center space-x-2 w-64">
