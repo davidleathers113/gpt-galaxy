@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from "sonner";
+import { mockPrompts } from '@/data/mockData';
 
 type SortOption = 'popular' | 'recent' | 'trending';
 type CategoryFilter = 'all' | string;
@@ -38,72 +39,123 @@ const PromptGrid = () => {
 
   // Fetch prompts from Supabase
   const fetchPrompts = async (): Promise<PromptWithReactions[]> => {
-    let query = supabase
-      .from('prompts')
-      .select('*');
-    
-    // Apply category filter if not 'all'
-    if (categoryFilter !== 'all') {
-      query = query.eq('category', categoryFilter);
-    }
-    
-    // Fetch prompts with pagination
-    const { data: prompts, error } = await query
-      .order(sortBy === 'popular' ? 'copy_count' : 'created_at', { ascending: false })
-      .range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
-    
-    if (error) {
-      console.error('Error fetching prompts:', error);
-      toast.error('Failed to load prompts');
-      throw error;
-    }
-    
-    // Fetch reactions for all prompts
-    const promptIds = prompts.map(prompt => prompt.id);
-    const { data: reactions, error: reactionsError } = await supabase
-      .from('prompt_reactions')
-      .select('*')
-      .in('prompt_id', promptIds);
-    
-    if (reactionsError) {
-      console.error('Error fetching reactions:', reactionsError);
-    }
-    
-    // Combine prompts with their reactions
-    const promptsWithReactions = prompts.map(prompt => {
-      const promptReactions = reactions
-        ? reactions.filter(r => r.prompt_id === prompt.id)
-        : [];
+    try {
+      let query = supabase
+        .from('prompts')
+        .select('*');
       
-      // Convert to the expected format
-      const reactionRecord: Record<string, number> = {};
+      // Apply category filter if not 'all'
+      if (categoryFilter !== 'all') {
+        query = query.eq('category', categoryFilter);
+      }
       
-      promptReactions.forEach(reaction => {
-        reactionRecord[reaction.reaction_type] = reaction.count;
+      // Fetch prompts with pagination
+      const { data: prompts, error } = await query
+        .order(sortBy === 'popular' ? 'copy_count' : 'created_at', { ascending: false })
+        .range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
+      
+      if (error) {
+        console.error('Error fetching prompts:', error);
+        throw error;
+      }
+      
+      // If no prompts found in Supabase, return formatted mock data
+      if (!prompts || prompts.length === 0) {
+        console.log('No prompts found in Supabase, using mock data');
+        return formatMockPrompts();
+      }
+      
+      // Fetch reactions for all prompts
+      const promptIds = prompts.map(prompt => prompt.id);
+      const { data: reactions, error: reactionsError } = await supabase
+        .from('prompt_reactions')
+        .select('*')
+        .in('prompt_id', promptIds);
+      
+      if (reactionsError) {
+        console.error('Error fetching reactions:', reactionsError);
+      }
+      
+      // Combine prompts with their reactions
+      const promptsWithReactions = prompts.map(prompt => {
+        const promptReactions = reactions
+          ? reactions.filter(r => r.prompt_id === prompt.id)
+          : [];
+        
+        // Convert to the expected format
+        const reactionRecord: Record<string, number> = {};
+        
+        promptReactions.forEach(reaction => {
+          reactionRecord[reaction.reaction_type] = reaction.count;
+        });
+        
+        return {
+          id: prompt.id,
+          title: prompt.title,
+          description: prompt.description,
+          code: prompt.code,
+          category: prompt.category,
+          copy_count: prompt.copy_count,
+          created_at: prompt.created_at,
+          reactions: reactionRecord
+        };
       });
       
-      return {
-        id: prompt.id,
-        title: prompt.title,
-        description: prompt.description,
-        code: prompt.code,
-        category: prompt.category,
-        copy_count: prompt.copy_count,
-        created_at: prompt.created_at,
-        reactions: reactionRecord
-      };
-    });
+      // Apply additional sorting for 'trending' which needs reactions data
+      if (sortBy === 'trending') {
+        promptsWithReactions.sort((a, b) => {
+          const aTotalReactions = Object.values(a.reactions).reduce((sum, count) => sum + count, 0);
+          const bTotalReactions = Object.values(b.reactions).reduce((sum, count) => sum + count, 0);
+          return bTotalReactions - aTotalReactions;
+        });
+      }
+      
+      return promptsWithReactions;
+    } catch (error) {
+      console.error('Failed to fetch prompts:', error);
+      // Fall back to mock data in case of any error
+      return formatMockPrompts();
+    }
+  };
+  
+  // Format mock data to match the expected PromptWithReactions format
+  const formatMockPrompts = (): PromptWithReactions[] => {
+    // Filter mock prompts based on category if a category filter is applied
+    let filteredMockPrompts = [...mockPrompts];
+    if (categoryFilter !== 'all') {
+      filteredMockPrompts = filteredMockPrompts.filter(
+        prompt => prompt.category === categoryFilter
+      );
+    }
     
-    // Apply additional sorting for 'trending' which needs reactions data
-    if (sortBy === 'trending') {
-      promptsWithReactions.sort((a, b) => {
+    // Sort the mock prompts
+    filteredMockPrompts.sort((a, b) => {
+      if (sortBy === 'popular') return b.copyCount - a.copyCount;
+      if (sortBy === 'trending') {
         const aTotalReactions = Object.values(a.reactions).reduce((sum, count) => sum + count, 0);
         const bTotalReactions = Object.values(b.reactions).reduce((sum, count) => sum + count, 0);
         return bTotalReactions - aTotalReactions;
-      });
-    }
+      }
+      // For 'recent', we don't have created_at in mock data, so just use default ordering
+      return 0;
+    });
     
-    return promptsWithReactions;
+    // Apply pagination
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    filteredMockPrompts = filteredMockPrompts.slice(start, end);
+    
+    // Convert to the format expected by the component
+    return filteredMockPrompts.map(prompt => ({
+      id: prompt.id,
+      title: prompt.title,
+      description: prompt.description,
+      code: prompt.code,
+      category: prompt.category,
+      copy_count: prompt.copyCount,
+      created_at: new Date().toISOString(), // Mock created_at
+      reactions: prompt.reactions
+    }));
   };
   
   // Use react-query to fetch and cache prompts
