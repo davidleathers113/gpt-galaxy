@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -114,7 +113,15 @@ export default {
 					'0%': { transform: 'scale(1)' },
 					'50%': { transform: 'scale(1.2)' },
 					'100%': { transform: 'scale(1)' }
-				}
+				},
+				aurora: {
+					from: {
+						backgroundPosition: "0% 0%, 0% 0%",
+					},
+					to: {
+						backgroundPosition: "100% 0%, 100% 100%",
+					},
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -127,7 +134,8 @@ export default {
 				'slide-out': 'slide-out 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
 				'pulse-light': 'pulse-light 2s ease-in-out infinite',
 				float: 'float 6s ease-in-out infinite',
-				'reaction-pulse': 'reaction-pulse 0.3s cubic-bezier(0.22, 1, 0.36, 1)'
+				'reaction-pulse': 'reaction-pulse 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+				aurora: "aurora 60s linear infinite",
 			},
 			typography: {
 				DEFAULT: {
