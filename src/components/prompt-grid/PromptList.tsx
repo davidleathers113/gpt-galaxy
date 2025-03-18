@@ -8,6 +8,17 @@ interface PromptListProps {
 }
 
 export default function PromptList({ promptColumns }: PromptListProps) {
+  // Check if there are any prompts to display
+  const hasPrompts = promptColumns.some(column => column.length > 0);
+  
+  if (!hasPrompts) {
+    return (
+      <div className="py-8 text-center text-muted-foreground">
+        No prompts to display.
+      </div>
+    );
+  }
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {promptColumns.map((column, columnIndex) => (
