@@ -47,10 +47,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
   // Calculate total reactions as a proxy for effectiveness
   const totalReactions = Object.values(userReactions).reduce((sum, count) => sum + count, 0);
   
-  // Determine compatibility based on the prompt type/category
-  const aiCompatibility = ['GPT-4', 'Claude', 'Gemini'];
-  
-  // Estimated time savings (this would be real data in a production app)
+  // Estimate time savings (this would be real data in a production app)
   const estimatedTimeSaved = '~25 min';
 
   return (
@@ -88,34 +85,8 @@ const PromptCard: React.FC<PromptCardProps> = ({
         <PromptCardCodeDisplay code={code} />
       </div>
       
-      {/* Bottom section with compatibility and reactions */}
+      {/* Bottom section with reactions only (compatibility and satisfaction removed) */}
       <div className="px-5 pt-2 pb-5">
-        <div className="flex justify-between items-center mb-3 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-3 h-3 text-green-500" />
-            <span>Works with: </span>
-            <div className="flex gap-1">
-              {aiCompatibility.map((ai, index) => (
-                <span key={ai} className={cn(
-                  "px-1.5 py-0.5 rounded-sm text-[10px] font-medium",
-                  index === 0 ? "bg-blue-100 text-blue-700" : 
-                  index === 1 ? "bg-purple-100 text-purple-700" : 
-                  "bg-emerald-100 text-emerald-700"
-                )}>
-                  {ai}
-                </span>
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <span title="Developer satisfaction rating" className="flex items-center">
-              <span className="text-muted-foreground mr-1">Satisfaction:</span>
-              <span className="font-medium text-foreground">{Math.round((totalReactions / (totalReactions + 10)) * 100)}%</span>
-            </span>
-          </div>
-        </div>
-        
         <PromptCardReactions 
           reactions={userReactions} 
           onReaction={handleReaction} 
