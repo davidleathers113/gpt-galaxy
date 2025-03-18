@@ -16,7 +16,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
-      <main className="flex-1">
+      <main className="flex-1 pt-24">
         <FeaturedPrompts />
         
         <section className="border-t border-border/40 bg-card/50 px-6 md:px-10 py-12">
