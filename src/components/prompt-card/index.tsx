@@ -46,9 +46,6 @@ const PromptCard: React.FC<PromptCardProps> = ({
 
   // Calculate total reactions as a proxy for effectiveness
   const totalReactions = Object.values(userReactions).reduce((sum, count) => sum + count, 0);
-  
-  // Estimate time savings (this would be real data in a production app)
-  const estimatedTimeSaved = '~25 min';
 
   return (
     <div className="prompt-card group relative rounded-xl border border-border bg-card hover:shadow-md transition-all duration-300">
@@ -58,10 +55,6 @@ const PromptCard: React.FC<PromptCardProps> = ({
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">
               {category}
-            </span>
-            <span className="text-xs text-muted-foreground flex items-center">
-              <Clock className="w-3 h-3 mr-1 text-amber-500" strokeWidth={2.5} /> 
-              <span title="Estimated time saved">{estimatedTimeSaved}</span>
             </span>
           </div>
           
@@ -85,7 +78,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
         <PromptCardCodeDisplay code={code} />
       </div>
       
-      {/* Bottom section with reactions only (compatibility and satisfaction removed) */}
+      {/* Bottom section with reactions only */}
       <div className="px-5 pt-2 pb-5">
         <PromptCardReactions 
           reactions={userReactions} 
