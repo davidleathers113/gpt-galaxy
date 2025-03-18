@@ -1,12 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { SlidersHorizontal, Star, ArrowDownUp } from 'lucide-react';
+import { SlidersHorizontal, Star, ArrowDownUp, AlertCircle } from 'lucide-react';
 import PromptCard from './PromptCard';
 import { Button } from './ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from "sonner";
-import { mockPrompts } from '@/data/mockData';
 
 type SortOption = 'popular' | 'recent' | 'trending';
 type CategoryFilter = 'all' | string;
@@ -40,6 +39,9 @@ const PromptGrid = () => {
   // Fetch prompts from Supabase
   const fetchPrompts = async (): Promise<PromptWithReactions[]> => {
     try {
+      // Log the fetch attempt for debugging
+      console.log(`Fetching prompts with filter: ${categoryFilter}, sort: ${sortBy}, page: ${page}`);
+      
       let query = supabase
         .from('prompts')
         .select('*');
@@ -59,14 +61,18 @@ const PromptGrid = () => {
         throw error;
       }
       
-      // If no prompts found in Supabase, return formatted mock data
+      // Log what we got from the database for debugging
+      console.log('Prompts from Supabase:', prompts);
+      
+      // If no prompts found, throw a specific error
       if (!prompts || prompts.length === 0) {
-        console.log('No prompts found in Supabase, using mock data');
-        return formatMockPrompts();
+        throw new Error('No prompts found in database. You may need to add some prompts to the "prompts" table in Supabase.');
       }
       
       // Fetch reactions for all prompts
       const promptIds = prompts.map(prompt => prompt.id);
+      console.log('Fetching reactions for prompt IDs:', promptIds);
+      
       const { data: reactions, error: reactionsError } = await supabase
         .from('prompt_reactions')
         .select('*')
@@ -74,7 +80,10 @@ const PromptGrid = () => {
       
       if (reactionsError) {
         console.error('Error fetching reactions:', reactionsError);
+        // Don't throw here, just log and continue with empty reactions
       }
+      
+      console.log('Reactions from Supabase:', reactions);
       
       // Combine prompts with their reactions
       const promptsWithReactions = prompts.map(prompt => {
@@ -113,49 +122,9 @@ const PromptGrid = () => {
       return promptsWithReactions;
     } catch (error) {
       console.error('Failed to fetch prompts:', error);
-      // Fall back to mock data in case of any error
-      return formatMockPrompts();
+      // Re-throw the error to be handled by the useQuery's error state
+      throw error;
     }
-  };
-  
-  // Format mock data to match the expected PromptWithReactions format
-  const formatMockPrompts = (): PromptWithReactions[] => {
-    // Filter mock prompts based on category if a category filter is applied
-    let filteredMockPrompts = [...mockPrompts];
-    if (categoryFilter !== 'all') {
-      filteredMockPrompts = filteredMockPrompts.filter(
-        prompt => prompt.category === categoryFilter
-      );
-    }
-    
-    // Sort the mock prompts
-    filteredMockPrompts.sort((a, b) => {
-      if (sortBy === 'popular') return b.copyCount - a.copyCount;
-      if (sortBy === 'trending') {
-        const aTotalReactions = Object.values(a.reactions).reduce((sum, count) => sum + count, 0);
-        const bTotalReactions = Object.values(b.reactions).reduce((sum, count) => sum + count, 0);
-        return bTotalReactions - aTotalReactions;
-      }
-      // For 'recent', we don't have created_at in mock data, so just use default ordering
-      return 0;
-    });
-    
-    // Apply pagination
-    const start = (page - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    filteredMockPrompts = filteredMockPrompts.slice(start, end);
-    
-    // Convert to the format expected by the component
-    return filteredMockPrompts.map(prompt => ({
-      id: prompt.id,
-      title: prompt.title,
-      description: prompt.description,
-      code: prompt.code,
-      category: prompt.category,
-      copy_count: prompt.copyCount,
-      created_at: new Date().toISOString(), // Mock created_at
-      reactions: prompt.reactions
-    }));
   };
   
   // Use react-query to fetch and cache prompts
@@ -190,6 +159,54 @@ const PromptGrid = () => {
   
   const handleLoadMore = () => {
     setPage(prev => prev + 1);
+  };
+
+  const renderEmptyState = () => {
+    return (
+      <div className="flex flex-col items-center justify-center bg-muted/30 rounded-xl p-10 text-center gap-4 border border-dashed border-muted-foreground/30">
+        <AlertCircle className="h-12 w-12 text-muted-foreground" />
+        <div>
+          <h3 className="text-lg font-semibold mb-1">No Prompts Found</h3>
+          <p className="text-muted-foreground max-w-md">
+            There are no prompts in the Supabase database. You need to add some prompts to the 'prompts' table.
+          </p>
+        </div>
+        <Button 
+          variant="outline" 
+          onClick={() => {
+            toast.info("Checking Supabase connection...")
+            refetch();
+          }}
+          className="mt-2"
+        >
+          Retry Connection
+        </Button>
+      </div>
+    );
+  };
+
+  const renderErrorState = (errorMessage: string) => {
+    return (
+      <div className="flex flex-col items-center justify-center bg-destructive/10 rounded-xl p-10 text-center gap-4 border border-dashed border-destructive/30">
+        <AlertCircle className="h-12 w-12 text-destructive" />
+        <div>
+          <h3 className="text-lg font-semibold mb-1 text-destructive">Error Loading Prompts</h3>
+          <p className="text-destructive/80 max-w-md">
+            {errorMessage || "Failed to load prompts from Supabase. Please check your connection and database."}
+          </p>
+        </div>
+        <Button 
+          variant="outline" 
+          className="border-destructive/30 hover:bg-destructive/10 text-destructive"
+          onClick={() => {
+            toast.info("Retrying connection to Supabase...")
+            refetch();
+          }}
+        >
+          Retry
+        </Button>
+      </div>
+    );
   };
 
   return (
@@ -235,19 +252,12 @@ const PromptGrid = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : error ? (
-          <div className="text-center p-8 bg-destructive/10 rounded-xl">
-            <p className="text-destructive font-medium">Failed to load prompts. Please try again.</p>
-            <Button 
-              variant="outline" 
-              className="mt-4"
-              onClick={() => refetch()}
-            >
-              Retry
-            </Button>
+          <div className="container mx-auto py-8">
+            {renderErrorState((error as Error).message)}
           </div>
         ) : promptsData?.length === 0 ? (
-          <div className="text-center p-8 bg-muted/50 rounded-xl">
-            <p className="text-muted-foreground">No prompts found for the selected category.</p>
+          <div className="container mx-auto py-8">
+            {renderEmptyState()}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
