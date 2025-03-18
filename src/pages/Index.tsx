@@ -3,7 +3,7 @@ import React from 'react';
 import Header from '@/components/Header';
 import FeaturedPrompts from '@/components/FeaturedPrompts';
 import AdvancedSearch from '@/components/AdvancedSearch';
-import PromptGrid from '@/components/PromptGrid';
+import PromptGrid from '@/components/prompt-grid';
 import Footer from '@/components/Footer';
 
 const Index = () => {
