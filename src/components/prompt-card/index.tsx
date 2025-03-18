@@ -7,6 +7,7 @@ import PromptCardReactions from './PromptCardReactions';
 import { toast } from "sonner";
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 export interface PromptCardProps {
   id: string;
@@ -49,13 +50,13 @@ const PromptCard: React.FC<PromptCardProps> = ({
   const totalReactions = Object.values(userReactions).reduce((sum, count) => sum + count, 0);
 
   return (
-    <div 
+    <article 
       className="prompt-card group relative rounded-xl border border-border/50 bg-card hover:shadow-md transition-all duration-300 hover:border-primary/20 focus-within:border-primary/30 focus-within:ring-1 focus-within:ring-primary/20"
       tabIndex={0}
     >
-      {/* More compact header section with improved visual hierarchy */}
-      <div className="p-4 pb-2.5">
-        <div className="flex justify-between items-start mb-2">
+      {/* Header section with improved visual hierarchy */}
+      <div className="p-4 pb-2">
+        <header className="flex justify-between items-start mb-2">
           <div className="flex items-center gap-1.5">
             <Badge 
               variant="outline" 
@@ -65,26 +66,32 @@ const PromptCard: React.FC<PromptCardProps> = ({
             </Badge>
           </div>
           
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground/70">
+          <div 
+            className="flex items-center gap-1.5 text-xs text-muted-foreground/80 bg-secondary/50 px-2 py-0.5 rounded-full" 
+            title={`Copied ${copyCount} times`}
+          >
             <Copy className="w-3 h-3 mr-0.5" /> 
-            <span className="tabular-nums">{copyCount}</span>
+            <span className="tabular-nums font-medium">{copyCount}</span>
           </div>
-        </div>
+        </header>
         
-        <h3 className="text-base font-semibold mb-2 text-foreground group-hover:text-primary/90 transition-colors line-clamp-1">
+        <h2 className="text-base font-semibold mb-2 text-foreground group-hover:text-primary/90 transition-colors line-clamp-1">
           {title}
-        </h3>
+        </h2>
         
         <PromptCardDescription description={description} />
       </div>
+      
+      {/* Subtle separator between sections */}
+      <Separator className="mb-2 bg-border/40" />
       
       {/* Code section with improved visual distinction */}
       <div className="px-4">
         <PromptCardCodeDisplay code={code} />
       </div>
       
-      {/* Bottom section with reactions - more compact */}
-      <div className="px-4 pt-1 pb-4">
+      {/* Bottom section with reactions - more accessible */}
+      <div className="px-4 pt-0 pb-4">
         <PromptCardReactions 
           reactions={userReactions} 
           onReaction={handleReaction} 
@@ -96,7 +103,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
         className="absolute inset-0 rounded-xl border-2 border-primary/20 opacity-0 pointer-events-none group-hover:opacity-30 group-focus-within:opacity-40 transition-opacity duration-300" 
         aria-hidden="true"
       />
-    </div>
+    </article>
   );
 };
 

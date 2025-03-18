@@ -11,7 +11,7 @@ interface PromptCardCodeDisplayProps {
 
 const PromptCardCodeDisplay: React.FC<PromptCardCodeDisplayProps> = ({ code }) => {
   const [copied, setCopied] = useState(false);
-  const [codeExpanded, setCodeExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
@@ -23,8 +23,8 @@ const PromptCardCodeDisplay: React.FC<PromptCardCodeDisplayProps> = ({ code }) =
     }, 2000);
   };
 
-  const toggleCodeExpand = () => {
-    setCodeExpanded(!codeExpanded);
+  const toggleExpand = () => {
+    setExpanded(!expanded);
   };
 
   // Determine if code is long enough to warrant expansion
@@ -32,20 +32,23 @@ const PromptCardCodeDisplay: React.FC<PromptCardCodeDisplayProps> = ({ code }) =
 
   return (
     <div className="prompt-code-container mb-4 group/code-container">
-      <div className="prompt-code relative rounded-lg bg-secondary/80 border border-border/50 overflow-hidden group/code">
+      <div 
+        className="prompt-code relative rounded-lg bg-secondary/90 border border-border/50 overflow-hidden shadow-sm group/code transition-shadow duration-200 hover:shadow-md"
+        tabIndex={0}
+      >
         {/* Header bar with language indicator and copy button */}
-        <div className="flex items-center justify-between px-3 py-1.5 bg-secondary/90 border-b border-border/30">
+        <div className="flex items-center justify-between px-3 py-1.5 bg-secondary/95 border-b border-border/40">
           <span className="text-xs font-medium text-muted-foreground">Code</span>
           
           <button 
             onClick={handleCopy}
-            className="p-1 rounded-md hover:bg-background/70 transition-colors"
+            className="p-1.5 rounded-md hover:bg-background/80 focus-visible:bg-background/90 focus-visible:ring-1 focus-visible:ring-primary/30 transition-colors"
             aria-label="Copy code to clipboard"
           >
             {copied ? (
               <Check className="w-3.5 h-3.5 text-green-500" />
             ) : (
-              <Copy className="w-3.5 h-3.5 opacity-70 group-hover/code:opacity-100" />
+              <Copy className="w-3.5 h-3.5 opacity-70 group-hover/code:opacity-100 transition-opacity" />
             )}
           </button>
         </div>
@@ -54,17 +57,21 @@ const PromptCardCodeDisplay: React.FC<PromptCardCodeDisplayProps> = ({ code }) =
         <div 
           className={cn(
             "relative transition-all duration-300 px-4 py-3",
-            codeExpanded ? "max-h-[500px]" : "max-h-32",
+            expanded ? "max-h-[500px]" : "max-h-32",
             "overflow-hidden"
           )}
+          id="code-content"
         >
           <pre className="text-xs sm:text-sm overflow-x-auto elegant-scroll pb-2">
             <code className="block whitespace-pre font-mono text-foreground/90">{code}</code>
           </pre>
           
           {/* Gradient fade for collapsed code */}
-          {!codeExpanded && isCodeLong && (
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-secondary/90 to-transparent pointer-events-none" />
+          {!expanded && isCodeLong && (
+            <div 
+              className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-secondary/95 to-transparent pointer-events-none" 
+              aria-hidden="true"
+            />
           )}
         </div>
       </div>
@@ -73,14 +80,15 @@ const PromptCardCodeDisplay: React.FC<PromptCardCodeDisplayProps> = ({ code }) =
       {isCodeLong && (
         <div className="flex justify-center mt-2 mb-0">
           <Button 
-            onClick={toggleCodeExpand} 
+            onClick={toggleExpand} 
             variant="ghost" 
             size="sm"
-            className="text-xs h-7 inline-flex items-center gap-1 text-primary hover:text-primary/90 hover:bg-primary/5"
-            aria-expanded={codeExpanded}
-            aria-label={codeExpanded ? "Show less code" : "Show more code"}
+            className="text-xs h-7 px-2 inline-flex items-center gap-1 text-primary/80 hover:text-primary hover:bg-primary/5 focus-visible:bg-primary/10 focus-visible:ring-1 focus-visible:ring-primary/30 rounded transition-all duration-200"
+            aria-expanded={expanded}
+            aria-controls="code-content"
+            aria-label={expanded ? "Show less code" : "Show more code"}
           >
-            {codeExpanded ? (
+            {expanded ? (
               <>
                 <ChevronUp className="w-3 h-3" /> Show less
               </>
@@ -93,8 +101,11 @@ const PromptCardCodeDisplay: React.FC<PromptCardCodeDisplayProps> = ({ code }) =
         </div>
       )}
       
-      {/* Subtle scroll indicator that only appears when hovering over code container */}
-      <div className="text-[10px] text-muted-foreground/50 mt-1 text-center opacity-0 group-hover/code-container:opacity-100 transition-opacity">
+      {/* Improved scroll indicator that appears when content is scrollable */}
+      <div 
+        className="text-[10px] text-muted-foreground/60 mt-1 text-center opacity-0 group-hover/code-container:opacity-100 transition-opacity" 
+        aria-hidden="true"
+      >
         <span aria-hidden="true">←</span>
         <span className="inline-block mx-1">scroll</span>
         <span aria-hidden="true">→</span>
