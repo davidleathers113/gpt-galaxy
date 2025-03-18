@@ -14,21 +14,26 @@ const PromptCardDescription: React.FC<PromptCardDescriptionProps> = ({ descripti
     setDescriptionExpanded(!descriptionExpanded);
   };
 
+  // Check if description is long enough to need expansion
+  const needsExpansion = description.length > 80;
+
   return (
-    <div className="relative mb-3">
-      <p className={cn(
-        "text-sm text-muted-foreground",
-        descriptionExpanded ? "" : "line-clamp-2"
-      )}>
+    <div className="relative mb-3 group/description">
+      <p 
+        className={cn(
+          "text-sm text-muted-foreground/90",
+          descriptionExpanded ? "" : "line-clamp-2"
+        )}
+      >
         {description}
       </p>
       
-      {description.length > 100 && (
+      {needsExpansion && (
         <button 
           onClick={toggleDescriptionExpand} 
-          className="text-xs flex items-center text-primary hover:underline mt-1 group"
+          className="text-xs flex items-center text-primary/80 hover:text-primary hover:underline mt-1 group focus:outline-none focus-visible:ring-1 focus-visible:ring-primary/30 rounded"
           aria-expanded={descriptionExpanded}
-          aria-label={descriptionExpanded ? "Show less description" : "Read more description"}
+          aria-label={descriptionExpanded ? "Show less of the description" : "Read more of the description"}
         >
           {descriptionExpanded ? (
             <>
