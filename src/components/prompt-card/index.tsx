@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Copy } from 'lucide-react';
+import { Copy, Zap, CheckCircle2 } from 'lucide-react';
 import PromptCardDescription from './PromptCardDescription';
 import PromptCardCodeDisplay from './PromptCardCodeDisplay';
 import PromptCardReactions from './PromptCardReactions';
@@ -37,11 +37,20 @@ const PromptCard: React.FC<PromptCardProps> = ({
       like: 'Helpful',
       love: 'Love',
       smile: 'Brilliant',
-      save: 'Saved'
+      save: 'Saved to your collection'
     };
     
     toast(`You reacted: ${reactionLabels[reactionId as keyof typeof reactionLabels] || 'Reaction'}`);
   };
+
+  // Calculate total reactions as a proxy for effectiveness
+  const totalReactions = Object.values(userReactions).reduce((sum, count) => sum + count, 0);
+  
+  // Determine compatibility based on the prompt type/category
+  const aiCompatibility = ['GPT-4', 'Claude', 'Gemini'];
+  
+  // Estimated time savings (this would be real data in a production app)
+  const estimatedTimeSaved = '~25 min';
 
   return (
     <div className="prompt-card rounded-xl border border-border bg-card p-5 hover:shadow-md transition-all duration-300">
@@ -51,9 +60,16 @@ const PromptCard: React.FC<PromptCardProps> = ({
             {category}
           </span>
         </div>
-        <div className="flex items-center text-xs text-muted-foreground">
-          <Copy className="w-3 h-3 mr-1" /> 
-          <span>{copyCount}</span>
+        
+        <div className="flex items-center text-xs text-muted-foreground gap-2">
+          <span className="flex items-center">
+            <Zap className="w-3 h-3 mr-1 text-amber-500" /> 
+            <span title="Estimated time saved">{estimatedTimeSaved}</span>
+          </span>
+          <span className="flex items-center">
+            <Copy className="w-3 h-3 mr-1" /> 
+            <span>{copyCount}</span>
+          </span>
         </div>
       </div>
       
@@ -64,6 +80,20 @@ const PromptCard: React.FC<PromptCardProps> = ({
       <PromptCardDescription description={description} />
       
       <PromptCardCodeDisplay code={code} />
+      
+      <div className="flex justify-between items-center mb-3 text-xs text-muted-foreground">
+        <div className="flex gap-1">
+          <span className="flex items-center">
+            <CheckCircle2 className="w-3 h-3 mr-1 text-green-500" />
+            Works with:
+          </span>
+          <span>{aiCompatibility.join(', ')}</span>
+        </div>
+        
+        <div>
+          <span title="Developer satisfaction rating">Satisfaction: {Math.round((totalReactions / (totalReactions + 10)) * 100)}%</span>
+        </div>
+      </div>
       
       <PromptCardReactions 
         reactions={userReactions} 

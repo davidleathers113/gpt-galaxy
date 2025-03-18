@@ -12,7 +12,13 @@ const PromptGrid = () => {
   const [sortBy, setSortBy] = useState<SortOption>('popular');
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
   
-  const categories = ['Development', 'Data Analysis', 'Creative Writing', 'Documentation', 'Testing'];
+  const categories = [
+    { id: 'Development', label: 'Development', description: 'Code-focused prompts for building software' },
+    { id: 'Data Analysis', label: 'Data Analysis', description: 'Extract insights from data sets' },
+    { id: 'Creative Writing', label: 'Creative Writing', description: 'Generate documentation and content' },
+    { id: 'Documentation', label: 'Documentation', description: 'Create structured technical docs' },
+    { id: 'Testing', label: 'Testing', description: 'QA and test case generation' }
+  ];
   
   const filteredPrompts = mockPrompts.filter(prompt => 
     categoryFilter === 'all' || prompt.category === categoryFilter
@@ -41,7 +47,7 @@ const PromptGrid = () => {
       <div className="container mx-auto max-w-7xl">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
           <h2 className="text-2xl font-bold">
-            Discover <span className="gradient-text">Prompts</span>
+            Find Your <span className="gradient-text">Perfect Prompt</span>
           </h2>
           
           <div className="flex flex-wrap gap-3">
@@ -54,7 +60,7 @@ const PromptGrid = () => {
               >
                 <option value="all">All Categories</option>
                 {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
+                  <option key={category.id} value={category.id}>{category.label}</option>
                 ))}
               </select>
             </div>
@@ -66,9 +72,9 @@ const PromptGrid = () => {
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
                 className="bg-transparent text-sm font-medium outline-none"
               >
-                <option value="popular">Most Copied</option>
-                <option value="trending">Trending</option>
-                <option value="recent">Newest</option>
+                <option value="popular">Most Used</option>
+                <option value="trending">Highest Rated</option>
+                <option value="recent">Newest Additions</option>
               </select>
             </div>
           </div>

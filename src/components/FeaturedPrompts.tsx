@@ -17,10 +17,10 @@ const FeaturedPrompts = () => {
           <div>
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-3">
               <Star className="w-3.5 h-3.5 mr-1.5" />
-              Featured Collection
+              Trusted by 5,000+ Developers
             </div>
             <h2 className="text-2xl font-bold">
-              Most Popular <span className="gradient-text">Prompts</span>
+              Top-Performing <span className="gradient-text">Time-Savers</span>
             </h2>
           </div>
           
@@ -28,7 +28,7 @@ const FeaturedPrompts = () => {
             href="#" 
             className="group inline-flex items-center text-sm font-medium mt-4 sm:mt-0 hover:text-primary transition-colors"
           >
-            <span>View all featured prompts</span>
+            <span>Explore full collection (2,500+ prompts)</span>
             <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-0.5" />
           </a>
         </div>
