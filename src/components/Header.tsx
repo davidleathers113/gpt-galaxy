@@ -1,11 +1,15 @@
 
 import React, { useEffect, useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, Moon, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { useTheme } from '@/hooks/use-theme';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
+  const { isDarkMode, setIsDarkMode } = useTheme();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -19,7 +23,7 @@ const Header = () => {
   return (
     <header 
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 md:px-10 py-4 bg-white",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 md:px-10 py-4 bg-background",
         scrolled 
           ? "shadow-md border-b border-border/30" 
           : "shadow-sm"
@@ -31,7 +35,7 @@ const Header = () => {
           <div className="flex items-center space-x-2">
             <Link to="/">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-                <span className="text-white font-bold text-xl">P</span>
+                <span className="text-primary-foreground font-bold text-xl">P</span>
               </div>
             </Link>
             <h1 className="text-xl font-semibold gradient-text tracking-tight">PromptVault</h1>
@@ -51,6 +55,19 @@ const Header = () => {
                 className="bg-transparent text-sm w-full outline-none placeholder:text-muted-foreground/60"
                 aria-label="Search prompts"
               />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Sun className="h-4 w-4" />
+              <Switch
+                id="header-dark-mode"
+                checked={isDarkMode}
+                onCheckedChange={setIsDarkMode}
+              />
+              <Moon className="h-4 w-4" />
+              <Label htmlFor="header-dark-mode" className="sr-only">
+                Toggle dark mode
+              </Label>
             </div>
           </div>
           

@@ -15,8 +15,12 @@ import {
 } from "@/components/ui/tooltip"
 import { Facebook, Instagram, Linkedin, Moon, Send, Sun, Twitter } from "lucide-react"
 
-function Footerdemo() {
-  const [isDarkMode, setIsDarkMode] = React.useState(true)
+interface FooterdemoProps {
+  isDarkMode: boolean;
+  setIsDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function Footerdemo({ isDarkMode, setIsDarkMode }: FooterdemoProps) {
   const [isChatOpen, setIsChatOpen] = React.useState(false)
 
   React.useEffect(() => {
