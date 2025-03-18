@@ -1,7 +1,6 @@
 
 import React from 'react';
 import Header from '@/components/Header';
-import Hero from '@/components/Hero';
 import FeaturedPrompts from '@/components/FeaturedPrompts';
 import AdvancedSearch from '@/components/AdvancedSearch';
 import PromptGrid from '@/components/PromptGrid';
@@ -18,8 +17,6 @@ const Index = () => {
       <Header />
       
       <main className="flex-1">
-        <Hero />
-        
         <FeaturedPrompts />
         
         <section className="border-t border-border/40 bg-card/50 px-6 md:px-10 py-12">
