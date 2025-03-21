@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import Header from '@/components/Header';
 import AdvancedSearch from '@/components/AdvancedSearch';
 import PromptGrid from '@/components/prompt-grid';
@@ -13,6 +14,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Helmet>
+        <title>PromptVault - Your AI Prompt Collection</title>
+        <meta name="description" content="Discover and share the best AI prompts for developers and creators with PromptVault." />
+      </Helmet>
+      
       <Header />
       
       <main className="flex-1 pt-24">
