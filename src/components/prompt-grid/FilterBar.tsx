@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { SlidersHorizontal, ArrowDownUp } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Added
 
 interface FilterBarProps {
   sortBy: string;
@@ -9,11 +10,11 @@ interface FilterBarProps {
   onCategoryChange: (category: string) => void;
 }
 
-export default function FilterBar({ 
-  sortBy, 
-  categoryFilter, 
-  onSortChange, 
-  onCategoryChange 
+export default function FilterBar({
+  sortBy,
+  categoryFilter,
+  onSortChange,
+  onCategoryChange
 }: FilterBarProps) {
   const categories = [
     { id: 'Development', label: 'Development', description: 'Code-focused prompts for building software' },
@@ -28,34 +29,32 @@ export default function FilterBar({
       <h2 className="text-2xl font-bold">
         Find Your <span className="gradient-text">Perfect Prompt</span>
       </h2>
-      
+
       <div className="flex flex-wrap gap-3">
-        <div className="inline-flex items-center rounded-full bg-secondary/80 px-3 py-1.5 gap-2 border border-border">
-          <SlidersHorizontal className="w-4 h-4" />
-          <select 
-            value={categoryFilter}
-            onChange={(e) => onCategoryChange(e.target.value)}
-            className="bg-transparent text-sm font-medium outline-none"
-          >
-            <option value="all">All Categories</option>
+        <Select value={categoryFilter} onValueChange={onCategoryChange}>
+          <SelectTrigger className="w-auto min-w-[180px] rounded-full text-sm h-auto py-1.5 px-3 gap-2 border bg-secondary/80">
+            <SlidersHorizontal className="w-4 h-4" />
+            <SelectValue placeholder="Select category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
             {categories.map(category => (
-              <option key={category.id} value={category.id}>{category.label}</option>
+              <SelectItem key={category.id} value={category.id}>{category.label}</SelectItem>
             ))}
-          </select>
-        </div>
-        
-        <div className="inline-flex items-center rounded-full bg-secondary/80 px-3 py-1.5 gap-2 border border-border">
-          <ArrowDownUp className="w-4 h-4" />
-          <select 
-            value={sortBy}
-            onChange={(e) => onSortChange(e.target.value)}
-            className="bg-transparent text-sm font-medium outline-none"
-          >
-            <option value="popular">Most Used</option>
-            <option value="trending">Highest Rated</option>
-            <option value="recent">Newest Additions</option>
-          </select>
-        </div>
+          </SelectContent>
+        </Select>
+
+        <Select value={sortBy} onValueChange={onSortChange}>
+          <SelectTrigger className="w-auto min-w-[180px] rounded-full text-sm h-auto py-1.5 px-3 gap-2 border bg-secondary/80">
+            <ArrowDownUp className="w-4 h-4" />
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="popular">Most Used</SelectItem>
+            <SelectItem value="trending">Highest Rated</SelectItem>
+            <SelectItem value="recent">Newest Additions</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

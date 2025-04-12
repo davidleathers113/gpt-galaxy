@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @layer base {
   :root {
@@ -98,7 +98,7 @@
     @apply border-border;
     box-sizing: border-box;
   }
-  
+
   html, body {
     height: 100%;
     overflow-x: hidden;
@@ -122,19 +122,19 @@
   .glass-card {
     @apply bg-white/80 backdrop-blur-lg border border-white/20 shadow-md;
   }
-  
+
   .prompt-card {
     @apply bg-card rounded-xl transition-all duration-300;
   }
-  
+
   .reaction-button {
     @apply flex items-center justify-center rounded-full p-2 transition-all duration-300 hover:bg-secondary;
   }
-  
+
   .prompt-code {
     @apply font-mono text-sm relative overflow-hidden;
   }
-  
+
   .search-input {
     @apply backdrop-blur-lg bg-white/10 border border-white/20 shadow-sm transition-all duration-300 focus-within:border-primary/30 focus-within:shadow-lg focus-within:shadow-primary/10;
   }
@@ -164,21 +164,21 @@
   .elegant-scroll::-webkit-scrollbar-thumb {
     @apply bg-muted-foreground/20 rounded-full transition-colors duration-300 hover:bg-muted-foreground/30;
   }
-  
+
   /* Enhancing horizontal scrolling experience */
   .horizontal-scroll-indicator {
     @apply text-center text-xs text-muted-foreground italic my-1 animate-pulse;
   }
-  
+
   /* Added utilities for card interactions */
   .card-hover-effect {
     @apply transition-all duration-300 hover:shadow-md hover:translate-y-[-2px];
   }
-  
+
   .prompt-code-container pre {
     @apply font-mono text-xs sm:text-sm overflow-x-auto;
   }
-  
+
   .prompt-code-container code {
     @apply block whitespace-pre;
   }
@@ -188,11 +188,11 @@
   .text-balance {
     text-wrap: balance;
   }
-  
+
   .gradient-text {
     @apply bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent;
   }
-  
+
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
