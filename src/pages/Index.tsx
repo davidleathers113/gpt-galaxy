@@ -7,7 +7,7 @@ import PromptGrid from '@/components/prompt-grid';
 import Footer from '@/components/Footer';
 
 const Index = () => {
-  const handleSearch = (criteria: any) => {
+  const handleSearch = (criteria: unknown) => {
     console.log('Search criteria:', criteria);
     // In a real app, this would filter the prompts based on criteria
   };
@@ -18,9 +18,9 @@ const Index = () => {
         <title>PromptVault - Your AI Prompt Collection</title>
         <meta name="description" content="Discover and share the best AI prompts for developers and creators with PromptVault." />
       </Helmet>
-      
+
       <Header />
-      
+
       <main className="flex-1 pt-24">
         <section className="border-t border-border/40 bg-card/50 px-6 md:px-10 py-12">
           <div className="container mx-auto max-w-7xl">
@@ -30,14 +30,14 @@ const Index = () => {
             <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
               Find exactly what you need with our powerful search tools. Filter by use case, complexity level, or specific programming language.
             </p>
-            
+
             <AdvancedSearch onSearch={handleSearch} />
           </div>
         </section>
-        
+
         <PromptGrid />
       </main>
-      
+
       <Footer />
     </div>
   );

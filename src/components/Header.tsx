@@ -1,23 +1,105 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Search, Menu, X, UploadCloud, ListPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 
+// Throttle utility function with leading and trailing edge options
+function throttle<T extends (...args: unknown[]) => void>(
+  func: T,
+  limit: number,
+  options: { leading?: boolean; trailing?: boolean } = { leading: true, trailing: true }
+): (...args: Parameters<T>) => void {
+  let inThrottle: boolean;
+  let lastResult: unknown;
+  let trailingCallScheduled = false;
+  let lastArgs: Parameters<T> | null = null;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  const throttled = (...args: Parameters<T>) => {
+    lastArgs = args; // Always store the latest args
+
+    if (!inThrottle) {
+      if (options.leading) {
+        // Leading edge call
+        lastResult = func(...args);
+      }
+      inThrottle = true;
+      timeoutId = setTimeout(timeoutCallback, limit);
+    } else if (options.trailing) {
+      // Mark that a trailing call is needed if trailing is enabled
+      trailingCallScheduled = true;
+    }
+    // Note: This implementation doesn't return the function's result consistently,
+    // but for event handlers like scroll, the return value is often unused.
+    // If the return value were important, more complex handling would be needed.
+  };
+
+  const timeoutCallback = () => {
+    inThrottle = false;
+    timeoutId = null; // Clear the timeout ID
+
+    if (trailingCallScheduled && options.trailing && lastArgs) {
+      // If a call was requested during the throttle period and trailing is enabled, execute it now
+      trailingCallScheduled = false;
+      lastResult = func(...lastArgs); // Execute the trailing call
+      // Re-set the timeout for the next potential leading call after this trailing call
+      inThrottle = true;
+      timeoutId = setTimeout(timeoutCallback, limit);
+    } else {
+      // Reset lastArgs if no trailing call was needed or executed
+      lastArgs = null;
+    }
+  };
+
+  // Optional: Add a cancel method if needed
+  // throttled.cancel = () => {
+  //   if (timeoutId) clearTimeout(timeoutId);
+  //   inThrottle = false;
+  //   trailingCallScheduled = false;
+  //   lastArgs = null;
+  //   timeoutId = null;
+  // };
+
+  return throttled;
+}
+
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
+  const scrollThreshold = 10;
+  const throttleDelay = 200; // Throttle delay
 
+  // Scroll handling logic will be defined inside useEffect
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
+    // Define the throttled handler inside the effect
+    const handleScroll = throttle(() => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+      // Use the scrollThreshold from the outer scope
+      setScrolled(scrollTop > scrollThreshold);
+    }, throttleDelay); // Use throttleDelay from the outer scope
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    // Attach throttled listener to document
+    document.addEventListener('scroll', handleScroll, true);
+
+    // Initial check using global scroll properties
+    const initialScrollTop = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+    // Set initial state directly
+    setScrolled(initialScrollTop > scrollThreshold);
+
+    // Cleanup: remove the exact same throttled function instance
+    return () => {
+      document.removeEventListener('scroll', handleScroll, true);
+      // If throttle created any timers that need explicit clearing on unmount,
+      // the throttle function would need to return a cleanup method.
+      // Assuming the current throttle implementation relies only on setTimeout,
+      // removing the listener is usually sufficient.
+    };
+    // Dependencies: scrollThreshold and throttleDelay are used inside the effect's logic
+  }, [scrollThreshold, throttleDelay]);
 
   // Consistent navigation links data with icons
   const navLinks = [
@@ -41,15 +123,16 @@ const Header = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out px-4 sm:px-6 md:px-10 py-3",
-        scrolled
-          ? "bg-background/90 backdrop-blur-sm shadow-md border-b border-border/30"
-          : "bg-background shadow-sm"
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out px-6 py-2", // Base classes
+        { // Conditional classes based on scrolled state
+          "bg-background/90 backdrop-blur-sm shadow-md border-b border-border/30": scrolled,
+          "bg-background": !scrolled,
+        }
       )}
       aria-label="Site header"
     >
-      <div className="container mx-auto max-w-7xl">
-        <div className="flex items-center justify-between h-14">
+       <div className="container mx-auto">
+        <div className="flex items-center justify-between h-12">
 
           {/* Logo and Site Title */}
           <div className="flex-shrink-0 mr-4">
@@ -61,9 +144,17 @@ const Header = () => {
           <div className="hidden md:flex flex-1 items-center justify-end space-x-6">
             <nav className="flex items-center space-x-2" aria-label="Main navigation">
               {navLinks.map((link) => (
-                <Button variant="ghost" asChild key={link.href}>
-                  <Link to={link.href}>{link.label}</Link>
-                </Button>
+                // Use Link styled as a button directly
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }), // Apply outline button styles
+                    "hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring" // Add hover/focus styles
+                  )}
+                >
+                  {link.label}
+                </Link>
               ))}
             </nav>
 
