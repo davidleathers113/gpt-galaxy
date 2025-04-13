@@ -103,10 +103,11 @@
     height: 100%;
     overflow-x: hidden;
     scroll-behavior: smooth;
+    @apply bg-background;
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply text-foreground font-sans antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 

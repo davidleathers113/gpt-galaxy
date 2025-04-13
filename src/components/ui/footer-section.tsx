@@ -2,6 +2,7 @@
 "use client"
 
 import * as React from "react"
+import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,21 +16,10 @@ import {
 } from "@/components/ui/tooltip"
 import { Facebook, Instagram, Linkedin, Moon, Send, Sun, Twitter } from "lucide-react"
 
-interface FooterdemoProps {
-  isDarkMode: boolean;
-  setIsDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-function Footerdemo({ isDarkMode, setIsDarkMode }: FooterdemoProps) {
+function Footerdemo() {
   const [isChatOpen, setIsChatOpen] = React.useState(false)
+  const { isDarkMode, setIsDarkMode } = useTheme(); // Get theme from context
 
-  React.useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-    }
-  }, [isDarkMode])
 
   return (
     <footer className="relative border-t bg-background text-foreground transition-colors duration-300">
@@ -147,7 +137,7 @@ function Footerdemo({ isDarkMode, setIsDarkMode }: FooterdemoProps) {
               <Switch
                 id="dark-mode"
                 checked={isDarkMode}
-                onCheckedChange={setIsDarkMode}
+                onCheckedChange={setIsDarkMode} // Use internal state setter
               />
               <Moon className="h-4 w-4" />
               <Label htmlFor="dark-mode" className="sr-only">
