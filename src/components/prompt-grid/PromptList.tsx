@@ -5,12 +5,14 @@ import { PromptWithReactions } from './hooks/usePrompts';
 
 interface PromptListProps {
   promptColumns: PromptWithReactions[][];
+  onCardClick: (id: string) => void;
+  onReactionUpdate: (promptId: string, reactionId: string) => void;
 }
 
-export default function PromptList({ promptColumns }: PromptListProps) {
+export default function PromptList({ promptColumns, onCardClick, onReactionUpdate }: PromptListProps) { // Destructure handlers
   // Check if there are any prompts to display
   const hasPrompts = promptColumns.some(column => column.length > 0);
-  
+
   if (!hasPrompts) {
     return (
       <div className="py-8 text-center text-muted-foreground">
@@ -18,13 +20,13 @@ export default function PromptList({ promptColumns }: PromptListProps) {
       </div>
     );
   }
-  
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {promptColumns.map((column, columnIndex) => (
         <div key={columnIndex} className="flex flex-col gap-6">
           {column.map(prompt => (
-            <PromptCard 
+            <PromptCard
               key={prompt.id}
               id={prompt.id}
               title={prompt.title}
@@ -33,6 +35,8 @@ export default function PromptList({ promptColumns }: PromptListProps) {
               category={prompt.category}
               copyCount={prompt.copy_count}
               reactions={prompt.reactions}
+              onCardClick={onCardClick} // Pass the card click handler down
+              onReactionUpdate={onReactionUpdate} // Pass the reaction update handler down
             />
           ))}
         </div>

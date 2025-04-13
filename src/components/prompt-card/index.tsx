@@ -19,6 +19,8 @@ export interface PromptCardProps {
   category: string;
   copyCount: number;
   reactions: Record<string, number>;
+  onCardClick: (id: string) => void; // Callback when the card itself is clicked
+  onReactionUpdate: (promptId: string, reactionId: string) => void; // Callback to update reaction in DB
 }
 
 const PromptCard: React.FC<PromptCardProps> = ({
@@ -29,61 +31,41 @@ const PromptCard: React.FC<PromptCardProps> = ({
   category,
   copyCount,
   reactions: initialReactions,
+  onCardClick, // Destructure the card click prop
+  onReactionUpdate, // Destructure the reaction update prop
 }) => {
   const [userReactions, setUserReactions] = useState(initialReactions);
   const [copied, setCopied] = useState(false);
 
-  const handleReaction = async (reactionId: string) => {
-    // Update local state first for better UX
+  const handleReaction = (reactionId: string) => {
+    // Update local state first for optimistic UI
     setUserReactions(prev => ({
       ...prev,
       [reactionId]: (prev[reactionId] || 0) + 1
     }));
 
-    // Update the reaction in Supabase
-    try {
-      // Check if this reaction already exists for this prompt
-      const { data: existingReaction } = await supabase
-        .from('prompt_reactions')
-        .select('*')
-        .eq('prompt_id', id)
-        .eq('reaction_type', reactionId)
-        .single();
+    // Call the handler passed from PromptGrid to update the backend and refetch
+    onReactionUpdate(id, reactionId);
 
-      if (existingReaction) {
-        // Update existing reaction count
-        await supabase
-          .from('prompt_reactions')
-          .update({ count: existingReaction.count + 1 })
-          .eq('id', existingReaction.id);
-      } else {
-        // Create new reaction
-        await supabase
-          .from('prompt_reactions')
-          .insert({
-            prompt_id: id,
-            reaction_type: reactionId,
-            count: 1
-          });
-      }
+    // Note: Toast notifications are now handled in PromptGrid after successful update/refetch
+    // We could add an immediate local toast here, but it might be redundant.
+  };
 
-      const reactionLabels = {
-        like: 'Helpful',
-        love: 'Love',
-        smile: 'Brilliant',
-        save: 'Saved to your collection'
-      };
+  // Stop propagation for the header copy button click
+  const handleHeaderCopyClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    handleCopy(); // Call the original copy logic
+  };
 
-      toast(`You reacted: ${reactionLabels[reactionId as keyof typeof reactionLabels] || 'Reaction'}`);
-    } catch (error) {
-      console.error('Error updating reaction:', error);
-      // Revert local state if there was an error
-      setUserReactions(initialReactions);
-      toast.error('Failed to save reaction');
+  // Stop propagation for the header copy button keydown
+  const handleHeaderCopyKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      // Allow default button activation but stop propagation to the card
+      e.stopPropagation();
     }
   };
 
-  const handleCopy = async () => {
+  const handleCopy = async () => { // Original copy logic remains
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
@@ -107,8 +89,22 @@ const PromptCard: React.FC<PromptCardProps> = ({
 
   return (
     <article
-      className="prompt-card group relative rounded-xl border border-border/50 bg-card hover:shadow-md transition-all duration-300 hover:border-primary/20 focus-within:border-primary/30 focus-within:ring-1 focus-within:ring-primary/20"
-      // Removed tabIndex={0}
+      className={cn(
+        "prompt-card group relative rounded-xl border border-border/50 bg-card transition-all duration-300",
+        "hover:shadow-md hover:border-primary/20", // Existing hover
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", // Standard focus ring
+        "cursor-pointer" // Make it clear it's clickable
+      )}
+      onClick={() => onCardClick(id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault(); // Prevent spacebar scrolling
+          onCardClick(id);
+        }
+      }}
+      role="button" // Announce as button
+      tabIndex={0} // Make focusable
+      aria-label={`View details for prompt: ${title}`} // Accessibility label
     >
       {/* Header section with improved visual hierarchy */}
       <div className="p-4 pb-2">
@@ -125,7 +121,8 @@ const PromptCard: React.FC<PromptCardProps> = ({
           <Button
             variant="secondary"
             size="sm" // Corrected size from 'xs' to 'sm'
-            onClick={handleCopy}
+            onClick={handleHeaderCopyClick} // Use wrapper function
+            onKeyDown={handleHeaderCopyKeyDown} // Add keydown handler
             className={cn(
               "h-auto px-2 py-0.5 rounded-full text-xs gap-1.5", // Adjusted classes for Button
               copied && "text-green-600 bg-green-100 hover:bg-green-100/90" // Adjusted copied state style
@@ -162,15 +159,11 @@ const PromptCard: React.FC<PromptCardProps> = ({
       <div className="px-4 pt-0 pb-4">
         <PromptCardReactions
           reactions={userReactions}
-          onReaction={handleReaction}
+          onReaction={handleReaction} // Pass the updated local handler
         />
       </div>
 
-      {/* Enhanced focus/hover effect for the entire card */}
-      <div
-        className="absolute inset-0 rounded-xl border-2 border-primary/20 opacity-0 pointer-events-none group-hover:opacity-30 group-focus-within:opacity-40 transition-opacity duration-300"
-        aria-hidden="true"
-      />
+      {/* Removed the extra overlay div, relying on standard focus/hover styles now */}
     </article>
   );
 };

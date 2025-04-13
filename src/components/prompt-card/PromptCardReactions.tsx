@@ -79,7 +79,9 @@ const PromptCardReactions: React.FC<PromptCardReactionsProps> = ({
   const isExtraSmallScreen = typeof window !== 'undefined' && window.innerWidth < 380;
   const shouldCollapseReactions = isExtraSmallScreen;
 
-  const handleReactionClick = (reactionId: string) => {
+  // Stop propagation for reaction button clicks/keydowns
+  const handleReactionClick = (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement>, reactionId: string) => {
+    e.stopPropagation(); // Prevent card click trigger
     onReaction(reactionId);
     setRecentlyClicked(reactionId);
 
@@ -87,6 +89,15 @@ const PromptCardReactions: React.FC<PromptCardReactionsProps> = ({
     setTimeout(() => {
       setRecentlyClicked(null);
     }, 300);
+  };
+
+  const handleReactionKeyDown = (e: React.KeyboardEvent<HTMLButtonElement | HTMLDivElement>, reactionId: string) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      // Allow default button activation but stop propagation to the card
+      e.stopPropagation();
+      // Note: The actual reaction logic is triggered by onClick,
+      // but stopping propagation here prevents the card's keydown handler.
+    }
   };
 
   // Render collapsible menu for small screens
@@ -109,7 +120,8 @@ const PromptCardReactions: React.FC<PromptCardReactionsProps> = ({
             {reactions.map((reaction) => (
               <DropdownMenuItem
                 key={reaction.id}
-                onClick={() => handleReactionClick(reaction.id)}
+                onClick={(e) => handleReactionClick(e, reaction.id)}
+                onKeyDown={(e) => handleReactionKeyDown(e, reaction.id)} // Add keydown handler for dropdown items
                 className="flex items-center gap-2 text-sm cursor-pointer"
               >
                 <span className={cn(
@@ -144,7 +156,8 @@ const PromptCardReactions: React.FC<PromptCardReactionsProps> = ({
               <Button
                 variant="outline" // Use outline variant
                 size="sm" // Use sm size
-                onClick={() => handleReactionClick(reaction.id)}
+                onClick={(e) => handleReactionClick(e, reaction.id)}
+                onKeyDown={(e) => handleReactionKeyDown(e, reaction.id)} // Add keydown handler for buttons
                 // Removed onMouseEnter/Leave, Tooltip handles hover
                 className={cn(
                   "text-xs rounded-full px-3 py-1.5 h-auto flex items-center gap-1.5 transition-all duration-200 border", // Base styles
