@@ -66,7 +66,7 @@ export function PromptGrid() {
         return prevPage + 1;
       });
     } else if (target.isIntersecting) {
-        console.log(`>>> Intersecting but conditions not met: isLoading=${isLoadingRef.current}, hasMore=${hasMoreRef.current}`); // Log why conditions failed
+      console.log(`>>> Intersecting but conditions not met: isLoading=${isLoadingRef.current}, hasMore=${hasMoreRef.current}`); // Log why conditions failed
     }
   }, []); // No dependencies needed as it reads from refs
 
@@ -80,45 +80,45 @@ export function PromptGrid() {
 
     // Create observer instance if it doesn't exist
     if (!observer.current) {
-        console.log("Creating IntersectionObserver instance.");
-        observer.current = new IntersectionObserver(handleObserver, options);
+      console.log("Creating IntersectionObserver instance.");
+      observer.current = new IntersectionObserver(handleObserver, options);
     }
 
     // Return cleanup function to disconnect observer on component unmount
     return () => {
-        if (observer.current) {
-            console.log("Disconnecting IntersectionObserver on unmount.");
-            observer.current.disconnect();
-            observer.current = null;
-        }
+      if (observer.current) {
+        console.log("Disconnecting IntersectionObserver on unmount.");
+        observer.current.disconnect();
+        observer.current = null;
+      }
     };
-  // }, [handleObserver]); // handleObserver is stable due to useCallback([])
+    // }, [handleObserver]); // handleObserver is stable due to useCallback([])
   }, []); // Run only once on mount
 
   // Callback Ref for the sentinel element
   const loadMoreRef = useCallback((node: HTMLDivElement | null) => {
     const currentObserver = observer.current;
     if (!currentObserver) {
-        console.log("Observer not ready yet in callback ref.");
-        return; // Observer not created yet
+      console.log("Observer not ready yet in callback ref.");
+      return; // Observer not created yet
     }
 
     // Disconnect from previous node if it exists
     if (loadMoreSentinelNode.current) {
-        console.log("Callback ref: Detaching observer from previous node:", loadMoreSentinelNode.current);
-        currentObserver.unobserve(loadMoreSentinelNode.current);
+      console.log("Callback ref: Detaching observer from previous node:", loadMoreSentinelNode.current);
+      currentObserver.unobserve(loadMoreSentinelNode.current);
     }
 
     // If node exists, observe it and store it
     if (node) {
-        console.log("Callback ref: Attaching observer to new node:", node);
-        currentObserver.observe(node);
-        loadMoreSentinelNode.current = node; // Store the node itself
+      console.log("Callback ref: Attaching observer to new node:", node);
+      currentObserver.observe(node);
+      loadMoreSentinelNode.current = node; // Store the node itself
     } else {
-        // Node is null (unmounted)
-        loadMoreSentinelNode.current = null;
+      // Node is null (unmounted)
+      loadMoreSentinelNode.current = null;
     }
-  // }, [handleObserver]); // Recreate callback if handleObserver changes (it shouldn't)
+    // }, [handleObserver]); // Recreate callback if handleObserver changes (it shouldn't)
   }, []); // Dependency array is empty because handleObserver is stable
 
   // Effect to update refs for the observer callback (keep this separate)
@@ -298,18 +298,18 @@ export function PromptGrid() {
 
   // If there's an error on the first page load, show the error state
   if (error && page === 1 && !isLoading && !loadError) { // Ensure not loading and no subsequent error active
-     return <ErrorState
-       errorMessage={(error as Error).message || "An unknown error occurred"}
-       onRetry={() => {
-         toast.info("Retrying connection...");
-         setPage(1); // Ensure we retry page 1
-         setDisplayedPrompts([]); // Clear potentially stale data
-         setHasMore(true); // Reset hasMore
-         setLoadError(null); // Also clear subsequent load error state
-         refetch();
-       }}
-     />;
-   }
+    return <ErrorState
+      errorMessage={(error as Error).message || "An unknown error occurred"}
+      onRetry={() => {
+        toast.info("Retrying connection...");
+        setPage(1); // Ensure we retry page 1
+        setDisplayedPrompts([]); // Clear potentially stale data
+        setHasMore(true); // Reset hasMore
+        setLoadError(null); // Also clear subsequent load error state
+        refetch();
+      }}
+    />;
+  }
 
   // If no prompts found after initial load (and no error), show empty state
   if (!isLoading && page === 1 && (!displayedPrompts || displayedPrompts.length === 0) && !error && !loadError) {
@@ -345,7 +345,7 @@ export function PromptGrid() {
         {/* Sentinel Element for Intersection Observer - Render conditionally */}
         {/* Attach observer via callback ref */}
         {/* Render sentinel only if there's more data AND no subsequent load error */}
-        { hasMore && !isLoading && !loadError && (
+        {hasMore && !isLoading && !loadError && (
           <div ref={loadMoreRef} style={{ height: '1px', margin: '1px 0' }} aria-hidden="true" /> /* Make it small but present */
         )}
 
@@ -380,21 +380,21 @@ export function PromptGrid() {
         )}
 
         {/* Indicate when there are no more prompts to load */}
-         {/* End of List Message */}
-         {!hasMore && !isLoading && !loadError && displayedPrompts && displayedPrompts.length > 0 && (
-           <div role="status" className="text-center text-muted-foreground mt-16">
-             You've reached the end! No more prompts to load.
-           </div>
-         )}
+        {/* End of List Message */}
+        {!hasMore && !isLoading && !loadError && displayedPrompts && displayedPrompts.length > 0 && (
+          <div role="status" className="text-center text-muted-foreground mt-16">
+            You've reached the end! No more prompts to load.
+          </div>
+        )}
 
       </div>
 
-        <PromptDetailModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          prompt={selectedPrompt}
-          onReactionUpdate={handleReactionUpdate}
-        />
+      <PromptDetailModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        prompt={selectedPrompt}
+        onReactionUpdate={handleReactionUpdate}
+      />
     </section>
   );
 }
