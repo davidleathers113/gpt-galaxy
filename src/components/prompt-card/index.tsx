@@ -90,8 +90,8 @@ const PromptCard: React.FC<PromptCardProps> = ({
   return (
     <article
       className={cn(
-        "prompt-card group relative rounded-xl border border-border/50 bg-card transition-all duration-300",
-        "hover:shadow-md hover:border-primary/20", // Existing hover
+        "prompt-card group relative rounded-xl border border-border bg-card transition-all duration-200",
+        "hover:scale-[1.01] transition-transform",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", // Standard focus ring
         "cursor-pointer" // Make it clear it's clickable
       )}
@@ -106,40 +106,38 @@ const PromptCard: React.FC<PromptCardProps> = ({
       tabIndex={0} // Make focusable
       aria-label={`View details for prompt: ${title}`} // Accessibility label
     >
-      {/* Header section with improved visual hierarchy */}
-      <div className="p-4 pb-2">
-        <header className="flex justify-between items-start mb-2">
+      {/* Header section */}
+      <div className="p-4">
+        <header className="flex justify-between items-start mb-3">
           <div className="flex items-center gap-1.5">
-            <Badge
-              variant="outline"
-              className="px-2 py-0.5 h-5 text-[10px] font-medium bg-primary/5 hover:bg-primary/10 border-primary/10 text-primary"
-            >
+            {/* Use standard secondary badge for better contrast */}
+            <Badge variant="secondary" className="px-2 py-0.5 text-xs">
               {category}
             </Badge>
           </div>
 
+          {/* Copy Button */}
           <Button
-            variant="secondary"
-            size="sm" // Corrected size from 'xs' to 'sm'
-            onClick={handleHeaderCopyClick} // Use wrapper function
-            onKeyDown={handleHeaderCopyKeyDown} // Add keydown handler
+            variant="ghost"
+            size="icon"
+            onClick={handleHeaderCopyClick}
+            onKeyDown={handleHeaderCopyKeyDown}
             className={cn(
-              "h-auto px-2 py-0.5 rounded-full text-xs gap-1.5", // Adjusted classes for Button
-              copied && "text-green-600 bg-green-100 hover:bg-green-100/90" // Adjusted copied state style
+              "h-7 w-7 text-muted-foreground hover:text-foreground",
+              copied && "text-green-500 hover:text-green-500"
             )}
-            title={copied ? "Copied!" : `Copy prompt (used ${copyCount} times)`}
-            aria-label={copied ? "Copied!" : `Copy prompt`} // Added aria-label
+            title={copied ? "Copied!" : `Copy prompt code`}
+            aria-label={copied ? "Copied prompt code!" : `Copy prompt code`}
           >
             {copied ? (
-              <CheckCircle2 className="w-3 h-3" aria-hidden="true" /> // Removed mr-0.5, rely on gap
+              <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
             ) : (
-              <Copy className="w-3 h-3" aria-hidden="true" /> // Removed mr-0.5, rely on gap
+              <Copy className="w-3.5 h-3.5" aria-hidden="true" />
             )}
-            <span className="tabular-nums font-medium">{copyCount}</span>
           </Button>
         </header>
 
-        <h2 className="text-base font-semibold mb-2 text-foreground group-hover:text-primary/90 transition-colors line-clamp-1">
+        <h2 className="text-base font-semibold mb-2 text-foreground group-hover:text-primary transition-colors line-clamp-1"> {/* Use primary on hover */}
           {title}
         </h2>
 
@@ -148,15 +146,15 @@ const PromptCard: React.FC<PromptCardProps> = ({
       </div>
 
       {/* Subtle separator between sections */}
-      <Separator className="mb-2 bg-border/40" />
+      <Separator className="mb-3 bg-border/20" />
 
-      {/* Code section with improved visual distinction */}
-      <div className="px-4">
+      {/* Code section */}
+      <div className="px-4 pb-3">
         <PromptCardCodeDisplay code={code} />
       </div>
 
-      {/* Bottom section with reactions - more accessible */}
-      <div className="px-4 pt-0 pb-4">
+      {/* Bottom section with reactions */}
+      <div className="px-4 pb-4">
         <PromptCardReactions
           reactions={userReactions}
           onReaction={handleReaction} // Pass the updated local handler

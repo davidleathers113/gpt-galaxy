@@ -22,9 +22,10 @@ export interface Reaction {
   id: string;
   icon: React.ReactNode;
   label: string;
-  color: string;
-  hoverColor: string;
-  activeColor: string;
+  // Restore color properties for Option A
+  color: string; // Base text color for icon
+  // hoverColor: string; // No longer needed
+  // activeColor: string; // No longer needed
 }
 
 export const reactions: Reaction[] = [
@@ -32,33 +33,25 @@ export const reactions: Reaction[] = [
     id: 'like',
     icon: <ThumbsUp className="w-3.5 h-3.5" />,
     label: 'Helpful',
-    color: 'bg-blue-50 text-blue-600 border-blue-100',
-    hoverColor: 'hover:bg-blue-100 hover:border-blue-200',
-    activeColor: 'active:bg-blue-200'
+    color: 'text-blue-600',
   },
   {
     id: 'love',
     icon: <Heart className="w-3.5 h-3.5" />,
     label: 'Love',
-    color: 'bg-red-50 text-red-600 border-red-100',
-    hoverColor: 'hover:bg-red-100 hover:border-red-200',
-    activeColor: 'active:bg-red-200'
+    color: 'text-red-600',
   },
   {
     id: 'smile',
     icon: <Smile className="w-3.5 h-3.5" />,
     label: 'Brilliant',
-    color: 'bg-amber-50 text-amber-600 border-amber-100',
-    hoverColor: 'hover:bg-amber-100 hover:border-amber-200',
-    activeColor: 'active:bg-amber-200'
+    color: 'text-amber-600',
   },
   {
     id: 'save',
     icon: <Star className="w-3.5 h-3.5" />,
     label: 'Save',
-    color: 'bg-purple-50 text-purple-600 border-purple-100',
-    hoverColor: 'hover:bg-purple-100 hover:border-purple-200',
-    activeColor: 'active:bg-purple-200'
+    color: 'text-purple-600',
   },
 ];
 
@@ -108,8 +101,8 @@ const PromptCardReactions: React.FC<PromptCardReactionsProps> = ({
           <DropdownMenuTrigger asChild>
             <Button
               variant="secondary"
-              size="sm" // Use sm size
-              className="text-xs rounded-full px-3 py-1.5 h-auto gap-1.5 border" // Adjusted classes
+              size="sm"
+              className="text-xs rounded-full px-3 py-1.5 h-auto gap-1.5 border"
               aria-label="Show reaction options"
             >
               <MoreHorizontal className="w-3.5 h-3.5" />
@@ -124,12 +117,7 @@ const PromptCardReactions: React.FC<PromptCardReactionsProps> = ({
                 onKeyDown={(e) => handleReactionKeyDown(e, reaction.id)} // Add keydown handler for dropdown items
                 className="flex items-center gap-2 text-sm cursor-pointer"
               >
-                <span className={cn(
-                  "p-1 rounded-full flex items-center justify-center",
-                  reaction.color
-                )}>
-                  {reaction.icon}
-                </span>
+                <span className={cn(reaction.color)}>{reaction.icon}</span>
                 <span>{reaction.label}</span>
                 <span className="ml-auto font-mono text-xs text-muted-foreground tabular-nums">
                   {userReactions[reaction.id] || 0}
@@ -154,24 +142,22 @@ const PromptCardReactions: React.FC<PromptCardReactionsProps> = ({
           <Tooltip key={reaction.id}>
             <TooltipTrigger asChild>
               <Button
-                variant="outline" // Use outline variant
-                size="sm" // Use sm size
+                variant="outline"
+                size="sm"
                 onClick={(e) => handleReactionClick(e, reaction.id)}
-                onKeyDown={(e) => handleReactionKeyDown(e, reaction.id)} // Add keydown handler for buttons
-                // Removed onMouseEnter/Leave, Tooltip handles hover
+                onKeyDown={(e) => handleReactionKeyDown(e, reaction.id)}
                 className={cn(
-                  "text-xs rounded-full px-3 py-1.5 h-auto flex items-center gap-1.5 transition-all duration-200 border", // Base styles
-                  reaction.color, // Apply color styles (might need adjustment for Button variants)
-                  reaction.hoverColor, // Apply hover styles (might need adjustment)
-                  reaction.activeColor, // Apply active styles (might need adjustment)
-                  "hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:outline-none", // Interaction styles
-                  "touch-manipulation",
+                  "text-xs rounded-full px-3 py-1.5 h-auto flex items-center gap-1.5 transition-all duration-200 border", // Base outline styles
+                  "hover:bg-accent hover:text-accent-foreground",
+                  "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "active:scale-95",
                   recentlyClicked === reaction.id && "animate-reaction-pulse"
                 )}
                 aria-label={`React with ${reaction.label}`}
-                aria-pressed={userReactions[reaction.id] > 0}
+                aria-pressed={!!userReactions[reaction.id] && userReactions[reaction.id] > 0}
               >
-                {reaction.icon}
+                {/* Apply theme color only to the icon */}
+                <span className={cn(reaction.color)}>{reaction.icon}</span>
                 <span className="font-medium tabular-nums">{userReactions[reaction.id] || 0}</span>
               </Button>
             </TooltipTrigger>

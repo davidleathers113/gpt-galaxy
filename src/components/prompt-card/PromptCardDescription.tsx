@@ -10,7 +10,7 @@ const PromptCardDescription: React.FC<PromptCardDescriptionProps> = ({ descripti
   return (
     // Apply line-clamp-3 for truncation as per spec
     // Added mb-3 for spacing consistent with original collapsible container
-    <div className="mb-3">
+    <div className="mb-2">
       <h3 className="sr-only">Prompt Description</h3>
       <p className={cn(
         "text-sm text-muted-foreground/90 line-clamp-3", // Apply line-clamp-3

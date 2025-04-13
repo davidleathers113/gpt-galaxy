@@ -176,7 +176,7 @@
   }
 
   .prompt-code-container pre {
-    @apply font-mono text-xs sm:text-sm overflow-x-auto;
+    @apply font-mono text-xs sm:text-sm;
   }
 
   .prompt-code-container code {
