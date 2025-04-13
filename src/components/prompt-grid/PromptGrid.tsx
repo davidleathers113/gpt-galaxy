@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import PromptList from './PromptList';
-import FilterBar from './FilterBar';
+// import FilterBar from './FilterBar'; // Removed as filtering is now handled by AdvancedSearch
 import { usePrompts, PromptWithReactions } from './hooks/usePrompts';
 import { LoadingState } from './LoadingState';
 import { ErrorState } from './ErrorState';
@@ -10,9 +10,22 @@ import { toast } from "sonner";
 import { supabase } from '@/integrations/supabase/client';
 import { QueryObserverResult, RefetchOptions } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button'; // Import Button for Retry
-export function PromptGrid() {
-  const [sortBy, setSortBy] = useState('popular');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+// Define SearchCriteria type (matching Index.tsx)
+interface SearchCriteria {
+  query: string;
+  category: string;
+  sortBy: 'popular' | 'recent' | 'trending';
+  minCopies: number | null;
+}
+
+// Define Props for PromptGrid
+interface PromptGridProps {
+  searchCriteria: SearchCriteria;
+}
+export function PromptGrid({ searchCriteria }: PromptGridProps) {
+  // Internal state removed, using props now
+  // const [sortBy, setSortBy] = useState('popular');
+  // const [categoryFilter, setCategoryFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [displayedPrompts, setDisplayedPrompts] = useState<PromptWithReactions[]>([]); // State for accumulated prompts
   const [hasMore, setHasMore] = useState(true); // State to track if more pages exist
@@ -33,7 +46,7 @@ export function PromptGrid() {
     isLoading: boolean;
     error: Error | null; // Use Error | null type
     refetch: (options?: RefetchOptions) => Promise<QueryObserverResult<PromptWithReactions[], Error>>;
-  } = usePrompts(categoryFilter, sortBy, page);
+  } = usePrompts(searchCriteria.category, searchCriteria.sortBy, page);
 
   // Ref for the Intersection Observer
   const observer = useRef<IntersectionObserver | null>(null);
@@ -51,7 +64,7 @@ export function PromptGrid() {
     setNewPromptsCount(0); // Reset announcement count
     // Optional: Scroll to top when filters change
     // window.scrollTo(0, 0);
-  }, [categoryFilter, sortBy]);
+  }, [searchCriteria.category, searchCriteria.sortBy]); // Use props
 
   // Infinite scroll observer callback - reads state from refs
   const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
@@ -161,12 +174,34 @@ export function PromptGrid() {
     // No observer cleanup needed here anymore
   }, [promptsData, page, isLoading, error]); // Dependencies related to data processing
 
+  // Implement filtering logic
+  const filteredPrompts = useMemo(() => {
+    if (!displayedPrompts) return [];
+
+    console.log(`Filtering ${displayedPrompts.length} prompts with query: '${searchCriteria.query}', minCopies: ${searchCriteria.minCopies}`);
+
+    const filtered = displayedPrompts.filter(prompt => {
+      // Query filter (case-insensitive on title and description)
+      const queryLower = searchCriteria.query.toLowerCase();
+      const titleMatch = prompt.title?.toLowerCase().includes(queryLower);
+      const descriptionMatch = prompt.description?.toLowerCase().includes(queryLower);
+      const queryFilterPassed = searchCriteria.query === '' || titleMatch || descriptionMatch;
+
+      // minCopies filter
+      const minCopiesFilterPassed = searchCriteria.minCopies === null || prompt.copy_count >= searchCriteria.minCopies;
+
+      return queryFilterPassed && minCopiesFilterPassed;
+    });
+    console.log(`Filtered down to ${filtered.length} prompts.`);
+    return filtered;
+  }, [displayedPrompts, searchCriteria.query, searchCriteria.minCopies]);
+
 
   // Calculate balanced columns based on accumulated displayedPrompts
   const promptColumns = useMemo(() => {
-    if (!displayedPrompts) return [[], []];
+    if (!filteredPrompts) return [[], []]; // Use filteredPrompts
     const columns: PromptWithReactions[][] = [[], []];
-    displayedPrompts.forEach((prompt) => {
+    filteredPrompts.forEach((prompt) => { // Use filteredPrompts
       // Simple balancing logic (same as before, but using displayedPrompts)
       // This estimation is basic; real-world might need actual height measurement after render
       const estimatedHeight =
@@ -186,7 +221,7 @@ export function PromptGrid() {
       }
     });
     return columns;
-  }, [displayedPrompts]); // Recalculate only when displayedPrompts changes
+  }, [filteredPrompts]); // Depend on filteredPrompts
 
 
   // For debugging - log when relevant state changes
@@ -326,14 +361,10 @@ export function PromptGrid() {
             {newPromptsCount} new prompts loaded.
           </div>
         )}
-        <FilterBar
-          sortBy={sortBy}
-          categoryFilter={categoryFilter}
-          onSortChange={setSortBy}
-          onCategoryChange={setCategoryFilter}
-        />
+        {/* FilterBar removed */}
 
         {/* Render PromptList if we have columns with content */}
+        {/* Render PromptList if we have *filtered* columns with content */}
         {promptColumns && (promptColumns[0].length > 0 || promptColumns[1].length > 0) && (
           <PromptList
             promptColumns={promptColumns}

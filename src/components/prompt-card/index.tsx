@@ -117,24 +117,33 @@ const PromptCard: React.FC<PromptCardProps> = ({
           </div>
 
           {/* Copy Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleHeaderCopyClick}
-            onKeyDown={handleHeaderCopyKeyDown}
-            className={cn(
-              "h-7 w-7 text-muted-foreground hover:text-foreground",
-              copied && "text-green-500 hover:text-green-500"
-            )}
-            title={copied ? "Copied!" : `Copy prompt code`}
-            aria-label={copied ? "Copied prompt code!" : `Copy prompt code`}
-          >
-            {copied ? (
-              <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
-            ) : (
-              <Copy className="w-3.5 h-3.5" aria-hidden="true" />
-            )}
-          </Button>
+          {/* Container for Copy Count and Button */}
+          <div className="flex items-center gap-2">
+            {/* Copy Count Display */}
+            <div className="flex items-center text-xs text-muted-foreground" title={`${copyCount} copies`}>
+              <span>{copyCount}</span>
+            </div>
+
+            {/* Copy Button (Original) */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleHeaderCopyClick}
+              onKeyDown={handleHeaderCopyKeyDown}
+              className={cn(
+                "h-7 w-7 text-muted-foreground hover:text-foreground",
+                copied && "text-green-500 hover:text-green-500"
+              )}
+              title={copied ? "Copied!" : `Copy prompt code`}
+              aria-label={copied ? "Copied prompt code!" : `Copy prompt code`}
+            >
+              {copied ? (
+                <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" aria-hidden="true" />
+              )}
+            </Button>
+          </div>
         </header>
 
         <h2 className="text-base font-semibold mb-2 text-foreground group-hover:text-primary transition-colors line-clamp-1"> {/* Use primary on hover */}

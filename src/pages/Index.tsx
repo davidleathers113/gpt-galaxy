@@ -1,17 +1,30 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Header from '@/components/Header';
 import AdvancedSearch from '@/components/AdvancedSearch';
 import PromptGrid from '@/components/prompt-grid';
 import Footer from '@/components/Footer';
 
+// Define SearchCriteria type (can be moved later)
+interface SearchCriteria {
+  query: string;
+  category: string;
+  sortBy: 'popular' | 'recent' | 'trending';
+  minCopies: number | null;
+}
 const Index = () => {
-  const handleSearch = (criteria: unknown) => {
-    console.log('Search criteria:', criteria);
-    // In a real app, this would filter the prompts based on criteria
-  };
+  const [searchCriteria, setSearchCriteria] = useState<SearchCriteria>({
+    query: '',
+    category: 'all',
+    sortBy: 'popular',
+    minCopies: null,
+  });
 
+  const handleSearch = (criteria: SearchCriteria) => {
+    console.log('Search criteria received in Index:', criteria);
+    setSearchCriteria(criteria);
+  };
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Helmet>
@@ -35,7 +48,7 @@ const Index = () => {
           </div>
         </section>
 
-        <PromptGrid />
+        <PromptGrid searchCriteria={searchCriteria} />
       </main>
 
       <Footer />
