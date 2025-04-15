@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, X, Filter, ArrowDown, ArrowUp } from 'lucide-react';
+import { Search, X, Filter, ArrowDown, ArrowUp, Minus, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input'; // Added
 import { Button } from '@/components/ui/button'; // Added
@@ -40,10 +40,28 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onSearch }) => {
       }));
     } else {
       // Handle Input onChange (event)
-      const { name: inputName, value: inputValue } = e.target;
+      const { name: inputName, value: rawValue } = e.target;
+      let processedValue: string | number | null = rawValue;
+
+      if (inputName === 'minCopies') {
+        const numericValue = parseInt(rawValue, 10);
+        if (rawValue === '') {
+          processedValue = null;
+        } else if (!isNaN(numericValue) && numericValue >= 0) {
+          processedValue = numericValue;
+        } else if (criteria.minCopies !== null) {
+          // If input is invalid but we had a valid number, keep the valid number
+          // This prevents typing letters from clearing a valid number
+          processedValue = criteria.minCopies;
+        } else {
+          // Otherwise, if input is invalid and current state is null, reset to null
+          processedValue = null;
+        }
+      }
+
       setCriteria(prev => ({
         ...prev,
-        [inputName]: inputName === 'minCopies' ? (inputValue === '' ? null : Number(inputValue)) : inputValue,
+        [inputName]: processedValue,
       }));
     }
   };
@@ -61,6 +79,17 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onSearch }) => {
       minCopies: null,
     });
   };
+
+    const handleMinCopiesChange = (amount: number) => {
+      setCriteria(prev => {
+        const currentVal = prev.minCopies ?? 0;
+        const newValue = Math.max(0, currentVal + amount); // Ensure value doesn't go below 0
+        return {
+          ...prev,
+          minCopies: newValue,
+        };
+      });
+    };
 
   return (
     <div className="w-full max-w-3xl mx-auto">
@@ -153,18 +182,46 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onSearch }) => {
               </Select>
             </div>
 
+            {/* Refined Min Copies Input with Internal Buttons */}
             <div className="space-y-1.5">
               <Label htmlFor="min-copies-input" className="text-xs font-medium text-muted-foreground">Minimum Copies</Label>
-              <Input
-                id="min-copies-input"
-                type="number"
-                name="minCopies"
-                value={criteria.minCopies ?? ''} // Use nullish coalescing
-                onChange={handleChange}
-                placeholder="e.g., 100" // Improved placeholder
-                className="w-full text-sm"
-                min="0" // Added min attribute
-              />
+              <div className="relative">
+                <Input
+                  id="min-copies-input"
+                  type="text"
+                  name="minCopies"
+                  value={criteria.minCopies ?? ''}
+                  onChange={handleChange}
+                  placeholder="e.g., 100"
+                  className="w-full text-sm pr-16" // Increased right padding for horizontal buttons
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  aria-label="Minimum copies value"
+                />
+                <div className="absolute inset-y-0 right-0 flex flex-row items-center pr-1"> {/* Changed to flex-row, added padding */}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 text-muted-foreground hover:text-foreground" // Slightly larger touch target
+                    onClick={() => handleMinCopiesChange(1)}
+                    aria-label="Increment minimum copies"
+                  >
+                    <Plus className="h-3 w-3" /> {/* Smaller icon */}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 text-muted-foreground hover:text-foreground" // Slightly larger touch target
+                    onClick={() => handleMinCopiesChange(-1)}
+                    disabled={criteria.minCopies === 0 || criteria.minCopies === null} // Disable if 0 or null
+                    aria-label="Decrement minimum copies"
+                  >
+                    <Minus className="h-3 w-3" /> {/* Smaller icon */}
+                  </Button>
+                </div>
+              </div>
             </div>
 
             <div className="sm:col-span-3 flex justify-end gap-2">
