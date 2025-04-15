@@ -127,7 +127,7 @@ const Header = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out px-6 py-2", // Base classes
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out py-2", // Base classes
         { // Conditional classes based on scrolled state
           "bg-background/90 backdrop-blur-sm shadow-md border-b border-border/30": scrolled,
           "bg-background": !scrolled,
@@ -135,7 +135,7 @@ const Header = () => {
       )}
       aria-label="Site header"
     >
-       <div className="container mx-auto">
+       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-12">
 
           {/* Logo and Site Title */}
