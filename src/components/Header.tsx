@@ -1,12 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Search, Menu, X, UploadCloud, ListPlus } from 'lucide-react';
+import { Search, Menu, X, UploadCloud, ListPlus, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { useTheme } from '@/hooks/use-theme';
 
 // Throttle utility function with leading and trailing edge options
 function throttle<T extends (...args: unknown[]) => void>(
@@ -72,6 +75,7 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const scrollThreshold = 10;
   const throttleDelay = 200; // Throttle delay
+  const { isDarkMode, setIsDarkMode } = useTheme();
 
   // Scroll handling logic will be defined inside useEffect
   useEffect(() => {
@@ -169,6 +173,20 @@ const Header = () => {
             </div>
           </div>
 
+            {/* Theme Toggle - Desktop */}
+            <div className="flex items-center space-x-2 ml-4">
+              <Sun className="h-4 w-4" />
+              <Switch
+                id="dark-mode-desktop"
+                checked={isDarkMode}
+                onCheckedChange={setIsDarkMode}
+              />
+              <Moon className="h-4 w-4" />
+              <Label htmlFor="dark-mode-desktop" className="sr-only">
+                Toggle dark mode
+              </Label>
+            </div>
+
           {/* Mobile Triggers */}
           <div className="flex items-center md:hidden space-x-1">
             {/* Mobile Search Trigger (Standard Dialog) */}
@@ -235,6 +253,22 @@ const Header = () => {
                     );
                   })}
                 </nav>
+
+                  {/* Theme Toggle - Mobile */}
+                  <div className="mt-6 pt-6 border-t border-border/30">
+                    <div className="flex items-center justify-between px-3">
+                      <Label htmlFor="dark-mode-mobile" className="text-base font-medium text-foreground/90">Dark Mode</Label>
+                      <div className="flex items-center space-x-2">
+                        <Sun className="h-4 w-4" />
+                        <Switch
+                          id="dark-mode-mobile"
+                          checked={isDarkMode}
+                          onCheckedChange={setIsDarkMode}
+                        />
+                        <Moon className="h-4 w-4" />
+                      </div>
+                    </div>
+                  </div>
               </SheetContent>
             </Sheet>
           </div>
