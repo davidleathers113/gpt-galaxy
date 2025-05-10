@@ -6,6 +6,14 @@ import AdvancedSearch from '@/components/AdvancedSearch';
 import PromptGrid from '@/components/prompt-grid';
 import Footer from '@/components/Footer';
 
+/**
+ * Represents the main component of the application.
+ * This component serves as the entry point for the user interface,
+ * rendering the layout and handling search functionality.
+ *
+ * @returns {JSX.Element} The rendered component containing the application layout,
+ * including the header, main content area, and footer.
+ */
 const Index = () => {
   const handleSearch = (criteria: any) => {
     console.log('Search criteria:', criteria);
